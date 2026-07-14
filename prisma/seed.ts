@@ -15,7 +15,7 @@ async function main() {
       email: 'admin@misschilipeppers.com',
       name: 'Miss Chili Admin',
       passwordHash: adminHash,
-      role: UserRole.ADMIN,
+      role: UserRole.SUPER_ADMIN,
     },
   });
   console.log('✅ Admin user created:', admin.email);
