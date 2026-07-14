@@ -84,7 +84,7 @@ export default async function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-border)]">
-                {recentOrders.map((order) => (
+                {recentOrders.map((order: any) => (
                   <tr key={order.id} className="hover:bg-[var(--color-surface-hover)] transition-colors">
                     <td className="px-[var(--space-4)] py-[var(--space-3)]">
                       <Link href={`/admin/orders/${order.id}`} className="font-semibold text-[var(--color-primary)] hover:underline">
