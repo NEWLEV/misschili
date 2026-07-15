@@ -5,6 +5,10 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import type { UserRole } from '@prisma/client';
 
+// bcrypt cost-12 hash of an unguessable dummy password, used to equalize
+// authorize() timing between "unknown email" and "wrong password"
+const DUMMY_PASSWORD_HASH = '$2b$12$5lu6mN.fvh5wsrEvXZ.PeuZ4NMaPdj0Yax0fUiZajXu5DMETzAz6q';
+
 declare module 'next-auth' {
   interface Session {
     user: {
@@ -55,10 +59,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email: email.toLowerCase() },
         });
 
-        if (!user) return null;
-
-        const isValid = await bcrypt.compare(password, user.passwordHash);
-        if (!isValid) return null;
+        // Compare against a dummy hash when the user doesn't exist so response
+        // timing doesn't reveal whether an email is registered
+        const isValid = await bcrypt.compare(
+          password,
+          user?.passwordHash ?? DUMMY_PASSWORD_HASH
+        );
+        if (!user || !isValid) return null;
 
         return {
           id: user.id,

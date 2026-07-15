@@ -68,8 +68,8 @@ export async function proxy(request: NextRequest) {
 
   // ─── Admin Route Protection ───────────────────────
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    const token = request.cookies.get('next-auth.session-token')?.value
-      || request.cookies.get('__Secure-next-auth.session-token')?.value;
+    const token = request.cookies.get('authjs.session-token')?.value
+      || request.cookies.get('__Secure-authjs.session-token')?.value;
 
     if (!token) {
       const loginUrl = new URL('/api/auth/signin', request.url);
