@@ -12,10 +12,10 @@ async function main() {
   // Admin user
   const adminHash = await bcrypt.hash('MissChili2024!', 12);
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@misschilipeppers.com' },
+    where: { email: 'admin@misschilihotsauce.com' },
     update: {},
     create: {
-      email: 'admin@misschilipeppers.com',
+      email: 'admin@misschilihotsauce.com',
       name: 'Miss Chili Admin',
       passwordHash: adminHash,
       role: UserRole.SUPER_ADMIN,
@@ -133,7 +133,7 @@ async function main() {
   console.log('✅ Default popup created');
 
   console.log('\n🌶️ Seed complete!');
-  console.log('Admin login: admin@misschilipeppers.com / MissChili2024!');
+  console.log('Admin login: admin@misschilihotsauce.com / MissChili2024!');
 }
 
 main()

@@ -52,7 +52,7 @@ Open [http://localhost:3000](http://localhost:3000)
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | admin@misschilipeppers.com | MissChili2024! |
+| Admin | admin@misschilihotsauce.com | MissChili2024! |
 
 ## Project Structure
 
