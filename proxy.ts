@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 // In-memory rate limiter for single-instance deployment
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
-function rateLimit(ip: string, maxAttempts: number = 5, windowMs: number = 15 * 60 * 1000): boolean {
+function rateLimit(ip: string, maxAttempts: number = 20, windowMs: number = 5 * 60 * 1000): boolean {
   const now = Date.now();
   const entry = rateLimitMap.get(ip);
 
@@ -60,7 +60,7 @@ export async function proxy(request: NextRequest) {
 
     if (!allowed) {
       return NextResponse.json(
-        { success: false, error: 'Too many login attempts. Please try again in 15 minutes.' },
+        { success: false, error: 'Too many login attempts. Please try again in 5 minutes.' },
         { status: 429 }
       );
     }
