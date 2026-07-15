@@ -166,6 +166,31 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<boolea
   });
 }
 
+// ─── Password Reset ──────────────────────────────────
+
+export async function sendPasswordResetEmail(to: string, resetUrl: string): Promise<boolean> {
+  const html = `
+    <div style="max-width: 600px; margin: 0 auto; font-family: 'Helvetica Neue', Arial, sans-serif; background: #1a1210; color: #ede8e3; padding: 40px 24px;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <img src="${process.env.NEXT_PUBLIC_APP_URL}/images/logos/MissChili_Logos_MissChili.png" alt="Miss Chili" width="80" />
+        <h1 style="font-size: 28px; color: #e84c3d; margin: 16px 0 0;">Reset Your Password</h1>
+      </div>
+      <p>We received a request to reset your password. Click below to choose a new one — this link expires in 1 hour.</p>
+      <div style="text-align: center; margin: 32px 0;">
+        <a href="${resetUrl}" style="display: inline-block; padding: 14px 32px; background: #e84c3d; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Reset Password</a>
+      </div>
+      <p style="color: #b8a080; font-size: 14px;">If you didn't request this, you can safely ignore this email — your password won't be changed.</p>
+      <p style="color: #b8a080; font-size: 14px; text-align: center;">Miss Chili Hot Sauce, LLC — Miami, FL</p>
+    </div>
+  `;
+
+  return sendEmail({
+    to,
+    subject: 'Reset Your Password | Miss Chili Hot Sauce',
+    html,
+  });
+}
+
 // ─── Admin: New Order Alert ─────────────────────────
 
 interface AdminOrderAlertData {

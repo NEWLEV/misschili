@@ -4,12 +4,12 @@ import type { NextRequest } from 'next/server';
 // In-memory rate limiter for single-instance deployment
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
-function rateLimit(ip: string, maxAttempts: number = 20, windowMs: number = 5 * 60 * 1000): boolean {
+function rateLimit(key: string, maxAttempts: number = 20, windowMs: number = 5 * 60 * 1000): boolean {
   const now = Date.now();
-  const entry = rateLimitMap.get(ip);
+  const entry = rateLimitMap.get(key);
 
   if (!entry || now > entry.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    rateLimitMap.set(key, { count: 1, resetTime: now + windowMs });
     return true;
   }
 
@@ -54,13 +54,21 @@ export async function proxy(request: NextRequest) {
   );
 
   // ─── Rate Limiting on Auth Routes ─────────────────
-  if (pathname === '/api/auth/signin' || pathname === '/api/auth/callback/credentials') {
+  const rateLimitedRoutes: Record<string, string> = {
+    '/api/auth/signin': 'Too many login attempts. Please try again in 5 minutes.',
+    '/api/auth/callback/credentials': 'Too many login attempts. Please try again in 5 minutes.',
+    '/api/account/signup': 'Too many signup attempts. Please try again in 5 minutes.',
+    '/api/account/forgot-password': 'Too many requests. Please try again in 5 minutes.',
+    '/api/account/reset-password': 'Too many requests. Please try again in 5 minutes.',
+  };
+
+  if (pathname in rateLimitedRoutes) {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown';
-    const allowed = rateLimit(ip);
+    const allowed = rateLimit(`${ip}:${pathname}`);
 
     if (!allowed) {
       return NextResponse.json(
-        { success: false, error: 'Too many login attempts. Please try again in 5 minutes.' },
+        { success: false, error: rateLimitedRoutes[pathname] },
         { status: 429 }
       );
     }

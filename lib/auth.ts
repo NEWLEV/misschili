@@ -27,8 +27,9 @@ declare module 'next-auth' {
 
 declare module 'next-auth' {
   interface JWT {
-    id: string;
-    role: UserRole;
+    id?: string;
+    role?: UserRole;
+    pwChangedAt?: number | null;
   }
 }
 
@@ -82,7 +83,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id as string;
         token.role = user.role;
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id as string },
+          select: { passwordChangedAt: true },
+        });
+        token.pwChangedAt = dbUser?.passwordChangedAt?.getTime() ?? null;
+        return token;
       }
+
+      // On every other request, check whether the password has changed
+      // since this token was issued — if so, treat it as logged out rather
+      // than trusting a JWT that predates a password reset.
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { passwordChangedAt: true },
+        });
+        const dbChangedAt = dbUser?.passwordChangedAt?.getTime() ?? null;
+        if (dbChangedAt !== null && dbChangedAt !== token.pwChangedAt) {
+          delete token.id;
+          delete token.role;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
