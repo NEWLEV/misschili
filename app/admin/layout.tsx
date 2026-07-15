@@ -7,7 +7,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const adminRoles = [
     'SUPER_ADMIN', 'STORE_MANAGER', 'INVENTORY_MANAGER', 
     'FULFILLMENT', 'SUPPORT', 'MARKETING', 'EDITOR', 
-    'ACCOUNTANT', 'DEVELOPER', 'AUDITOR', 'ADMIN'
+    'ACCOUNTANT', 'DEVELOPER', 'AUDITOR'
   ];
 
   if (!session || !session.user || !adminRoles.includes(session.user.role as string)) {

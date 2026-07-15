@@ -30,6 +30,8 @@ export default function AdminLoginPage() {
   };
 
   return (
+    <>
+    <style>{`header, footer { display: none !important; } main { padding: 0 !important; }`}</style>
     <div className="min-h-screen flex items-center justify-center p-[var(--space-4)]" style={{ background: 'var(--color-bg-alt)' }}>
       <div className="w-full max-w-sm">
         <div className="text-center mb-[var(--space-8)]">
@@ -45,5 +47,6 @@ export default function AdminLoginPage() {
         </form>
       </div>
     </div>
+    </>
   );
 }
