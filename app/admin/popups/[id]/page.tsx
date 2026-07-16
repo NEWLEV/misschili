@@ -80,10 +80,15 @@ export default async function EditPopupPage({
           <Input label="End Date (optional)" name="endDate" type="date" defaultValue={toDateInputValue(popup.endDate)} />
         </div>
 
-        <label className="flex items-center gap-2 text-[var(--text-sm)]">
-          <input type="checkbox" name="isActive" defaultChecked={popup.isActive} />
-          Active
-        </label>
+        <div>
+          <label className="flex items-center gap-2 text-[var(--text-sm)]">
+            <input type="checkbox" name="isActive" defaultChecked={popup.isActive} />
+            Active
+          </label>
+          <p className="text-[var(--text-xs)] text-[var(--color-text-muted)] mt-1">
+            Only one popup can be active at a time. Activating this one will deactivate any other active popup.
+          </p>
+        </div>
 
         <Button type="submit" variant="primary" size="lg" className="w-full">Save Changes</Button>
       </form>

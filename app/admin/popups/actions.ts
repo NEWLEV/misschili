@@ -28,8 +28,17 @@ export async function createPopup(formData: FormData) {
     throw new Error(parsed.error.issues[0].message);
   }
 
-  const popup = await prisma.popup.create({
-    data: { ...parsed.data, imageUrl: parsed.data.imageUrl || null, ctaUrl: parsed.data.ctaUrl || null },
+  const popup = await prisma.$transaction(async (tx) => {
+    const created = await tx.popup.create({
+      data: { ...parsed.data, imageUrl: parsed.data.imageUrl || null, ctaUrl: parsed.data.ctaUrl || null },
+    });
+    if (created.isActive) {
+      await tx.popup.updateMany({
+        where: { id: { not: created.id }, isActive: true },
+        data: { isActive: false },
+      });
+    }
+    return created;
   });
 
   revalidatePath('/admin/popups');
@@ -42,12 +51,34 @@ export async function updatePopup(popupId: string, formData: FormData) {
     return { success: false, error: parsed.error.issues[0].message };
   }
 
-  await prisma.popup.update({
-    where: { id: popupId },
-    data: { ...parsed.data, imageUrl: parsed.data.imageUrl || null, ctaUrl: parsed.data.ctaUrl || null },
+  await prisma.$transaction(async (tx) => {
+    await tx.popup.update({
+      where: { id: popupId },
+      data: { ...parsed.data, imageUrl: parsed.data.imageUrl || null, ctaUrl: parsed.data.ctaUrl || null },
+    });
+    if (parsed.data.isActive) {
+      await tx.popup.updateMany({
+        where: { id: { not: popupId }, isActive: true },
+        data: { isActive: false },
+      });
+    }
   });
 
   revalidatePath(`/admin/popups/${popupId}`);
   revalidatePath('/admin/popups');
   return { success: true };
+}
+
+export async function togglePopupActive(popupId: string, isActive: boolean) {
+  await prisma.$transaction(async (tx) => {
+    await tx.popup.update({ where: { id: popupId }, data: { isActive } });
+    if (isActive) {
+      await tx.popup.updateMany({
+        where: { id: { not: popupId }, isActive: true },
+        data: { isActive: false },
+      });
+    }
+  });
+
+  revalidatePath('/admin/popups');
 }

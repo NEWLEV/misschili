@@ -72,7 +72,7 @@ export default async function HomePage() {
         <div className="section-container relative z-10 py-[var(--space-20)]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--space-12)] items-center">
             <div className="max-w-xl">
-              <p className="text-[var(--text-sm)] font-semibold text-[var(--color-secondary)] tracking-[var(--tracking-wider)] uppercase mb-[var(--space-4)] animate-fade-in">
+              <p className="text-[var(--text-sm)] font-semibold text-white tracking-[var(--tracking-wider)] uppercase mb-[var(--space-4)] animate-fade-in">
                 Handcrafted in Miami 🌶️
               </p>
               <h1
@@ -82,7 +82,7 @@ export default async function HomePage() {
                 {heroHeadline}
               </h1>
               <p
-                className="text-[var(--text-lg)] text-[var(--color-text-secondary)] mb-[var(--space-8)] max-w-lg animate-slide-up"
+                className="text-[var(--text-lg)] text-white/85 mb-[var(--space-8)] max-w-lg animate-slide-up"
                 style={{ animationDelay: '200ms' }}
               >
                 {heroSubtext}
@@ -97,7 +97,7 @@ export default async function HomePage() {
                   </Button>
                 </Link>
                 <Link href="#about">
-                  <Button variant="outline" size="lg">
+                  <Button variant="outline" size="lg" className="border-white/30 hover:bg-white/10" style={{ color: 'white' }}>
                     Our Story
                   </Button>
                 </Link>
@@ -116,7 +116,7 @@ export default async function HomePage() {
                 ].map((badge) => (
                   <div key={badge.text} className="flex items-center gap-[var(--space-2)]">
                     <span className="text-lg">{badge.icon}</span>
-                    <span className="text-[var(--text-xs)] text-[var(--color-text-muted)] font-medium">
+                    <span className="text-[var(--text-xs)] text-white/70 font-medium">
                       {badge.text}
                     </span>
                   </div>
@@ -184,13 +184,13 @@ export default async function HomePage() {
         <div className="section-container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-[var(--space-12)] items-center">
             <div className="lg:col-span-3">
-              <p className="text-[var(--text-sm)] font-semibold text-[var(--color-secondary)] tracking-[var(--tracking-wider)] uppercase mb-[var(--space-3)]">
+              <p className="text-[var(--text-sm)] font-semibold text-white tracking-[var(--tracking-wider)] uppercase mb-[var(--space-3)]">
                 Our Origin
               </p>
-              <h2 className="text-[var(--text-4xl)] font-bold mb-[var(--space-5)]" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2 className="text-[var(--text-4xl)] font-bold mb-[var(--space-5)] text-white" style={{ fontFamily: 'var(--font-display)' }}>
                 It Started With a Garden
               </h2>
-              <div className="space-y-[var(--space-4)] text-[var(--color-text-secondary)] text-[var(--text-base)]">
+              <div className="space-y-[var(--space-4)] text-white/85 text-[var(--text-base)]">
                 <p>
                   Miss Chili started the way all great things do — by accident. A backyard garden
                   in Miami overflowing with ghost peppers and no idea what to do with them all.
@@ -208,7 +208,7 @@ export default async function HomePage() {
                 </p>
               </div>
               <p
-                className="text-[var(--text-xl)] font-bold text-[var(--color-secondary)] mt-[var(--space-6)] italic"
+                className="text-[var(--text-xl)] font-bold text-white mt-[var(--space-6)] italic"
                 style={{ fontFamily: 'var(--font-display)' }}
               >
                 &ldquo;Shake Her Well, Pour Her Slow.&rdquo;

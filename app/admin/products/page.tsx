@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { setProductStatus } from './[id]/actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,9 +75,19 @@ export default async function AdminProductsPage() {
                       {formatPrice(Number(product.basePrice))}
                     </td>
                     <td className="p-[var(--space-4)] text-right">
-                      <Link href={`/admin/products/${product.id}`}>
-                        <Button variant="ghost" size="sm">Edit</Button>
-                      </Link>
+                      <div className="flex items-center justify-end gap-[var(--space-2)]">
+                        <form action={async () => {
+                          'use server';
+                          await setProductStatus(product.id, product.status === 'ARCHIVED' ? 'ACTIVE' : 'ARCHIVED');
+                        }}>
+                          <Button type="submit" variant="ghost" size="sm">
+                            {product.status === 'ARCHIVED' ? 'Activate' : 'Disable'}
+                          </Button>
+                        </form>
+                        <Link href={`/admin/products/${product.id}`}>
+                          <Button variant="ghost" size="sm">Edit</Button>
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );

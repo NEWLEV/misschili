@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { togglePopupActive } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,9 +43,19 @@ export default async function AdminPopupsPage() {
                     </span>
                   </td>
                   <td className="p-[var(--space-4)] text-right">
-                    <Link href={`/admin/popups/${popup.id}`}>
-                      <Button variant="ghost" size="sm">Edit</Button>
-                    </Link>
+                    <div className="flex items-center justify-end gap-[var(--space-2)]">
+                      <form action={async () => {
+                        'use server';
+                        await togglePopupActive(popup.id, !popup.isActive);
+                      }}>
+                        <Button type="submit" variant="ghost" size="sm">
+                          {popup.isActive ? 'Deactivate' : 'Activate'}
+                        </Button>
+                      </form>
+                      <Link href={`/admin/popups/${popup.id}`}>
+                        <Button variant="ghost" size="sm">Edit</Button>
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

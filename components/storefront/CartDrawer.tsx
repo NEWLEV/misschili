@@ -57,9 +57,9 @@ export function CartDrawer() {
                 <p className="text-[var(--color-text)] font-medium mb-[var(--space-1)]">Your cart is empty</p>
                 <p className="text-[var(--text-sm)] text-[var(--color-text-muted)]">Time to add some heat!</p>
               </div>
-              <Button variant="primary" onClick={closeCart}>
-                <Link href="/products">Continue Shopping</Link>
-              </Button>
+              <Link href="/products" onClick={closeCart}>
+                <Button variant="primary">Continue Shopping</Button>
+              </Link>
             </div>
           ) : (
             <ul className="flex flex-col gap-[var(--space-4)]">

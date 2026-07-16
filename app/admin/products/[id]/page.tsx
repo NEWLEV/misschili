@@ -2,25 +2,30 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { updateInventory, updatePrice } from './actions';
+import { updateInventory, updatePrice, updateProduct } from './actions';
 import { Button } from '@/components/ui/Button';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const product = await prisma.product.findUnique({
-    where: { id },
-    include: {
-      images: true,
-      inventory: true,
-    },
-  });
+  const [product, categories] = await Promise.all([
+    prisma.product.findUnique({
+      where: { id },
+      include: {
+        images: true,
+        inventory: true,
+        categories: { select: { categoryId: true } },
+      },
+    }),
+    prisma.category.findMany({ orderBy: { sortOrder: 'asc' } }),
+  ]);
 
   if (!product) return notFound();
 
   const currentStock = product.inventory?.quantity || 0;
   const lowStockThreshold = product.inventory?.lowStockThreshold || 5;
+  const selectedCategoryIds = new Set(product.categories.map((c) => c.categoryId));
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -49,22 +54,75 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
         <div className="lg:col-span-2 space-y-[var(--space-6)]">
           <div className="card p-[var(--space-6)]">
             <h2 className="text-[var(--text-lg)] font-semibold mb-[var(--space-4)]">Product Details</h2>
-            <div className="space-y-[var(--space-4)]">
+            <form action={async (formData) => {
+              'use server';
+              await updateProduct(product.id, formData);
+            }} className="space-y-[var(--space-4)]">
               <div>
-                <p className="text-[var(--text-sm)] font-medium text-[var(--color-text-muted)]">Description</p>
-                <p className="text-[var(--text-sm)] mt-1">{product.description}</p>
+                <label className="block text-[var(--text-sm)] font-medium mb-1">Name</label>
+                <input name="name" defaultValue={product.name} required
+                  className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]" />
+              </div>
+              <div>
+                <label className="block text-[var(--text-sm)] font-medium mb-1">Slug</label>
+                <input name="slug" defaultValue={product.slug} required
+                  className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]" />
+              </div>
+              <div>
+                <label className="block text-[var(--text-sm)] font-medium mb-1">SKU</label>
+                <input name="sku" defaultValue={product.sku} required
+                  className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]" />
+              </div>
+              <div>
+                <label className="block text-[var(--text-sm)] font-medium mb-1">Description</label>
+                <textarea name="description" defaultValue={product.description} required rows={4}
+                  className="w-full p-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[var(--text-sm)] font-medium text-[var(--color-text-muted)]">Heat Level</p>
-                  <p className="text-[var(--text-base)]">{product.heatLevel ? `${product.heatLevel} / 10` : 'N/A'}</p>
+                  <label className="block text-[var(--text-sm)] font-medium mb-1">Heat Level (1-10)</label>
+                  <input type="number" name="heatLevel" min="1" max="10" defaultValue={product.heatLevel ?? ''}
+                    className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]" />
                 </div>
                 <div>
-                  <p className="text-[var(--text-sm)] font-medium text-[var(--color-text-muted)]">Volume</p>
-                  <p className="text-[var(--text-base)]">{product.volume || 'N/A'}</p>
+                  <label className="block text-[var(--text-sm)] font-medium mb-1">Volume</label>
+                  <input name="volume" defaultValue={product.volume ?? ''} placeholder="5 fl oz (148 ml)"
+                    className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]" />
                 </div>
               </div>
-            </div>
+              <div>
+                <label className="block text-[var(--text-sm)] font-medium mb-1">Ingredients</label>
+                <textarea name="ingredients" defaultValue={product.ingredients ?? ''} rows={2}
+                  className="w-full p-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]" />
+              </div>
+              <div>
+                <label className="block text-[var(--text-sm)] font-medium mb-1">Status</label>
+                <select name="status" defaultValue={product.status}
+                  className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]">
+                  <option value="DRAFT">Draft</option>
+                  <option value="ACTIVE">Active</option>
+                  <option value="ARCHIVED">Archived (disabled)</option>
+                </select>
+              </div>
+              {categories.length > 0 && (
+                <div>
+                  <label className="block text-[var(--text-sm)] font-medium mb-2">Categories</label>
+                  <div className="flex flex-wrap gap-4">
+                    {categories.map((category) => (
+                      <label key={category.id} className="flex items-center gap-2 text-[var(--text-sm)]">
+                        <input type="checkbox" name="categoryIds" value={category.id} defaultChecked={selectedCategoryIds.has(category.id)} />
+                        {category.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <label className="flex items-center gap-2 text-[var(--text-sm)]">
+                <input type="checkbox" name="isFeatured" defaultChecked={product.isFeatured} />
+                Feature on homepage
+              </label>
+              <Button type="submit" variant="primary" className="w-full">Save Product Details</Button>
+            </form>
           </div>
 
           <div className="card p-[var(--space-6)]">
