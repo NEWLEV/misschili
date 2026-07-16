@@ -50,18 +50,20 @@ function markShown(popup: Popup) {
 
 export function PopupManager() {
   const pathname = usePathname();
+  const isAdminRoute = pathname.startsWith('/admin');
   const { itemCount } = useCart();
   const [popups, setPopups] = useState<Popup[]>([]);
   const [activePopup, setActivePopup] = useState<Popup | null>(null);
 
   useEffect(() => {
+    if (isAdminRoute) return;
     fetch('/api/popups/active')
       .then((res) => res.json())
       .then((data) => {
         if (data.success) setPopups(data.data as Popup[]);
       })
       .catch(() => {});
-  }, []);
+  }, [isAdminRoute]);
 
   const showNext = useCallback(
     (candidates: Popup[]) => {
@@ -100,7 +102,7 @@ export function PopupManager() {
     };
   }, [popups, activePopup, itemCount, showNext]);
 
-  if (!activePopup) return null;
+  if (isAdminRoute || !activePopup) return null;
 
   const close = () => {
     markShown(activePopup);
