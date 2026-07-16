@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/Button';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminProductDetailPage({ params }: { params: { id: string } }) {
+export default async function AdminProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const product = await prisma.product.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       images: true,
       inventory: true,

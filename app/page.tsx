@@ -1,98 +1,11 @@
-'use client';
-
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import { useCart } from '@/components/storefront/CartProvider';
-import { formatPrice } from '@/lib/utils';
 import { FlameBackground } from '@/components/ui/FlameBackground';
-
-// Product data embedded for initial launch — will be replaced by Prisma queries
-const PRODUCTS = [
-  {
-    id: 'fiery-heat-001',
-    slug: 'fiery-heat-ghost-pepper',
-    name: 'Fiery Heat — Ghost Pepper',
-    sku: 'MC-FH-5OZ',
-    description: 'Made for heatseekers. What starts as a spark quickly becomes a rush of sweetness, spices, and fiery heat.',
-    price: 12.99,
-    salePrice: null,
-    imageUrl: '/images/logos/MissChili_Logos_FieryHeat.png',
-    labelUrl: '/images/labels/MissChili_Label_FIERYHEAT.jpg',
-    heatLevel: 9,
-    volume: '5 fl oz (148 ml)',
-    ingredients: 'Distilled White Vinegar, Garlic, Sugar, Sweet Basil, Cilantro, Ghost Pepper, Kosher Salt, Xanthan Gum',
-    maxQuantity: 50,
-  },
-  {
-    id: 'spicy-hot-001',
-    slug: 'spicy-hot-jalapeno-habanero',
-    name: 'Spicy Hot — Jalapeño Habanero',
-    sku: 'MC-SH-5OZ',
-    description: 'Jalapeño flavor combined with habanero peppers and fresh spices for a lively taste that will leave you wanting more.',
-    price: 11.99,
-    salePrice: null,
-    imageUrl: '/images/logos/MissChili_Logos_SpicyHot.png',
-    labelUrl: '/images/labels/MissChili_LabelSPICYHOT.jpg',
-    heatLevel: 7,
-    volume: '5 fl oz (148 ml)',
-    ingredients: 'Distilled White Vinegar, Jalapeños, Habanero Peppers, Garlic, Onions, Sweet Basil, Cilantro, Kosher Salt, Xanthan Gum',
-    maxQuantity: 50,
-  },
-];
-
-const REVIEWS = [
-  {
-    id: '1',
-    name: 'Captain Mike R.',
-    rating: 5,
-    text: 'We discovered this at the sailing club potluck and haven\'t used another hot sauce since. The Fiery Heat on grilled mahi is unreal.',
-    verified: true,
-  },
-  {
-    id: '2',
-    name: 'Derek T.',
-    rating: 5,
-    text: 'The Spicy Hot has the perfect jalapeño-habanero balance. Not just heat for heat\'s sake — real depth of flavor.',
-    verified: true,
-  },
-  {
-    id: '3',
-    name: 'Rachel M.',
-    rating: 5,
-    text: 'Bought both bottles as a gift. He called me the next day asking where to order more. That says everything.',
-    verified: true,
-  },
-  {
-    id: '4',
-    name: 'James K.',
-    rating: 4,
-    text: 'The ghost pepper sauce genuinely surprised me. It builds slowly and then hits hard — the best kind of burn.',
-    verified: true,
-  },
-];
-
-function HeatMeter({ level }: { level: number }) {
-  return (
-    <div className="flex gap-1 items-center" aria-label={`Heat level ${level} out of 10`}>
-      {Array.from({ length: 10 }).map((_, i) => (
-        <div
-          key={i}
-          className="w-2 h-4 rounded-sm transition-all duration-300"
-          style={{
-            background: i < level
-              ? `oklch(${0.55 - (i * 0.02)} ${0.18 + (i * 0.005)} ${25 + (i * 5)})`
-              : 'var(--color-surface-hover)',
-          }}
-        />
-      ))}
-      <span className="ml-2 text-[var(--text-xs)] font-semibold text-[var(--color-text-secondary)] tabular-nums">
-        {level}/10
-      </span>
-    </div>
-  );
-}
+import { FeaturedProductsSection } from '@/components/storefront/FeaturedProductsSection';
+import { NewsletterSignup } from '@/components/storefront/NewsletterSignup';
+import { getProducts } from '@/lib/products';
+import { prisma } from '@/lib/prisma';
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -114,30 +27,28 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-export default function HomePage() {
-  const { addItem } = useCart();
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+async function getFeaturedReviews() {
+  const reviews = await prisma.review.findMany({
+    where: { status: 'APPROVED' },
+    take: 4,
+    orderBy: { createdAt: 'desc' },
+    include: { user: { select: { name: true } } },
+  });
 
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setNewsletterStatus('loading');
-    try {
-      const res = await fetch('/api/newsletter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: newsletterEmail, source: 'footer' }),
-      });
-      if (res.ok) {
-        setNewsletterStatus('success');
-        setNewsletterEmail('');
-      } else {
-        setNewsletterStatus('error');
-      }
-    } catch {
-      setNewsletterStatus('error');
-    }
-  };
+  return reviews.map((r) => ({
+    id: r.id,
+    name: r.user.name || 'Verified Customer',
+    rating: r.rating,
+    text: r.body || r.title || '',
+    verified: r.isVerified,
+  }));
+}
+
+export default async function HomePage() {
+  const [{ products: featuredProducts }, reviews] = await Promise.all([
+    getProducts({ featured: true, limit: 4 }),
+    getFeaturedReviews(),
+  ]);
 
   return (
     <>
@@ -237,75 +148,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-8)] max-w-4xl mx-auto">
-            {PRODUCTS.map((product, index) => (
-              <article
-                key={product.id}
-                className="card overflow-hidden group"
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                {/* Product Image */}
-                <div className="relative aspect-square bg-[var(--color-bg-alt)] flex items-center justify-center p-[var(--space-8)] overflow-hidden">
-                  <Image
-                    src={product.imageUrl}
-                    alt={product.name}
-                    width={280}
-                    height={380}
-                    className="h-[300px] w-auto object-contain group-hover:scale-110 transition-transform duration-500"
-                  />
-                  {/* Heat Level Badge */}
-                  <div className="absolute top-[var(--space-4)] right-[var(--space-4)]">
-                    <span className="badge badge-primary">
-                      🔥 Heat {product.heatLevel}/10
-                    </span>
-                  </div>
-                </div>
-
-                {/* Product Info */}
-                <div className="p-[var(--space-6)]">
-                  <Link href={`/products/${product.slug}`}>
-                    <h3 className="text-[var(--text-xl)] font-semibold mb-[var(--space-2)] hover:text-[var(--color-primary)] transition-colors" style={{ fontFamily: 'var(--font-display)' }}>
-                      {product.name}
-                    </h3>
-                  </Link>
-                  <p className="text-[var(--text-sm)] text-[var(--color-text-secondary)] mb-[var(--space-3)] line-clamp-2">
-                    {product.description}
-                  </p>
-
-                  <HeatMeter level={product.heatLevel} />
-
-                  <div className="flex items-center justify-between mt-[var(--space-4)] pt-[var(--space-4)] border-t border-[var(--color-border)]">
-                    <div>
-                      <span className="text-[var(--text-2xl)] font-bold tabular-nums">
-                        {formatPrice(product.price)}
-                      </span>
-                      <span className="text-[var(--text-xs)] text-[var(--color-text-muted)] ml-[var(--space-2)]">
-                        {product.volume}
-                      </span>
-                    </div>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() =>
-                        addItem({
-                          id: product.id,
-                          slug: product.slug,
-                          name: product.name,
-                          sku: product.sku,
-                          price: product.price,
-                          salePrice: product.salePrice,
-                          imageUrl: product.imageUrl,
-                          maxQuantity: product.maxQuantity,
-                        })
-                      }
-                    >
-                      Add to Cart
-                    </Button>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+          <FeaturedProductsSection products={featuredProducts} />
         </div>
       </section>
 
@@ -374,48 +217,50 @@ export default function HomePage() {
       </section>
 
       {/* ─── Testimonials ─────────────────────────────── */}
-      <section className="section-padding" style={{ background: 'var(--color-bg-alt)' }}>
-        <div className="section-container">
-          <div className="mb-[var(--space-10)]">
-            <h2 className="text-[var(--text-3xl)] font-bold mb-[var(--space-3)]" style={{ fontFamily: 'var(--font-display)' }}>
-              What Heat Seekers Say
-            </h2>
-            <p className="text-[var(--color-text-secondary)]">
-              Real reviews from real hot sauce lovers. No paid promotions.
-            </p>
-          </div>
+      {reviews.length > 0 && (
+        <section className="section-padding" style={{ background: 'var(--color-bg-alt)' }}>
+          <div className="section-container">
+            <div className="mb-[var(--space-10)]">
+              <h2 className="text-[var(--text-3xl)] font-bold mb-[var(--space-3)]" style={{ fontFamily: 'var(--font-display)' }}>
+                What Heat Seekers Say
+              </h2>
+              <p className="text-[var(--color-text-secondary)]">
+                Real reviews from real hot sauce lovers. No paid promotions.
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-5)]">
-            {REVIEWS.map((review) => (
-              <article
-                key={review.id}
-                className="card p-[var(--space-6)]"
-              >
-                <div className="flex items-center gap-[var(--space-3)] mb-[var(--space-4)]">
-                  <StarRating rating={review.rating} />
-                  {review.verified && (
-                    <span className="badge badge-success text-[10px]">
-                      ✓ Verified
-                    </span>
-                  )}
-                </div>
-                <p className="text-[var(--color-text)] mb-[var(--space-4)] italic">
-                  &ldquo;{review.text}&rdquo;
-                </p>
-                <p className="text-[var(--text-sm)] font-medium text-[var(--color-text-secondary)]">
-                  — {review.name}
-                </p>
-              </article>
-            ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-5)]">
+              {reviews.map((review) => (
+                <article
+                  key={review.id}
+                  className="card p-[var(--space-6)]"
+                >
+                  <div className="flex items-center gap-[var(--space-3)] mb-[var(--space-4)]">
+                    <StarRating rating={review.rating} />
+                    {review.verified && (
+                      <span className="badge badge-success text-[10px]">
+                        ✓ Verified
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[var(--color-text)] mb-[var(--space-4)] italic">
+                    &ldquo;{review.text}&rdquo;
+                  </p>
+                  <p className="text-[var(--text-sm)] font-medium text-[var(--color-text-secondary)]">
+                    — {review.name}
+                  </p>
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ─── Ingredients Callout ──────────────────────── */}
       <section className="section-padding" style={{ background: 'var(--color-bg)' }}>
         <div className="section-container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--space-12)]">
-            {PRODUCTS.map((product) => (
+            {featuredProducts.map((product) => (
               <div key={product.id} className="card p-[var(--space-6)]">
                 <div className="flex items-start gap-[var(--space-4)]">
                   <Image
@@ -458,34 +303,7 @@ export default function HomePage() {
               New flavors, limited drops, and recipes delivered straight to your inbox. No spam — just spice.
             </p>
 
-            {newsletterStatus === 'success' ? (
-              <div className="p-[var(--space-4)] rounded-[var(--radius-lg)] bg-[oklch(from_var(--color-success)_l_c_h_/_0.1)] border border-[oklch(from_var(--color-success)_l_c_h_/_0.2)]">
-                <p className="text-[var(--color-success)] font-medium">🌶️ You&apos;re in! Watch your inbox for some heat.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleNewsletterSubmit} className="flex gap-[var(--space-3)] max-w-md mx-auto">
-                <input
-                  type="email"
-                  value={newsletterEmail}
-                  onChange={(e) => setNewsletterEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="flex-1 h-12 px-[var(--space-4)] rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
-                />
-                <Button
-                  variant="primary"
-                  type="submit"
-                  isLoading={newsletterStatus === 'loading'}
-                >
-                  Subscribe
-                </Button>
-              </form>
-            )}
-            {newsletterStatus === 'error' && (
-              <p className="text-[var(--text-sm)] text-[var(--color-danger)] mt-[var(--space-3)]">
-                Something went wrong. Please try again.
-              </p>
-            )}
+            <NewsletterSignup />
           </div>
         </div>
       </section>

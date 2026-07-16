@@ -5,6 +5,7 @@ import { CartProvider } from '@/components/storefront/CartProvider';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
 import { CartDrawer } from '@/components/storefront/CartDrawer';
+import { PopupManager } from '@/components/storefront/PopupManager';
 
 export const metadata: Metadata = {
   title: {
@@ -83,6 +84,7 @@ export default function RootLayout({
           <CartProvider>
             <Header />
             <CartDrawer />
+            <PopupManager />
             <main id="main-content">{children}</main>
             <Footer />
           </CartProvider>
