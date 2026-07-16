@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { updateInventory } from './actions';
+import { updateInventory, updatePrice } from './actions';
 import { Button } from '@/components/ui/Button';
 
 export const dynamic = 'force-dynamic';
@@ -55,16 +55,6 @@ export default async function AdminProductDetailPage({ params }: { params: { id:
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[var(--text-sm)] font-medium text-[var(--color-text-muted)]">Base Price</p>
-                  <p className="text-[var(--text-base)] font-semibold tabular-nums">${Number(product.basePrice).toFixed(2)}</p>
-                </div>
-                {product.salePrice && (
-                  <div>
-                    <p className="text-[var(--text-sm)] font-medium text-[var(--color-text-muted)]">Sale Price</p>
-                    <p className="text-[var(--text-base)] font-semibold tabular-nums text-[var(--color-danger)]">${Number(product.salePrice).toFixed(2)}</p>
-                  </div>
-                )}
-                <div>
                   <p className="text-[var(--text-sm)] font-medium text-[var(--color-text-muted)]">Heat Level</p>
                   <p className="text-[var(--text-base)]">{product.heatLevel ? `${product.heatLevel} / 10` : 'N/A'}</p>
                 </div>
@@ -93,6 +83,45 @@ export default async function AdminProductDetailPage({ params }: { params: { id:
 
         {/* Sidebar Info & Forms */}
         <div className="space-y-[var(--space-6)]">
+          {/* Pricing Form */}
+          <div className="card p-[var(--space-5)]">
+            <h2 className="text-[var(--text-base)] font-semibold mb-[var(--space-3)]">Pricing</h2>
+            <form action={async (formData) => {
+              'use server';
+              const salePriceInput = formData.get('salePrice') as string;
+              await updatePrice(
+                product.id,
+                Number(formData.get('basePrice')),
+                salePriceInput ? Number(salePriceInput) : null
+              );
+            }} className="space-y-[var(--space-4)]">
+              <div>
+                <label className="block text-[var(--text-sm)] font-medium mb-1">Base Price ($)</label>
+                <input
+                  type="number"
+                  name="basePrice"
+                  defaultValue={Number(product.basePrice)}
+                  required
+                  min="0"
+                  step="0.01"
+                  className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]"
+                />
+              </div>
+              <div>
+                <label className="block text-[var(--text-sm)] font-medium mb-1">Sale Price ($, optional)</label>
+                <input
+                  type="number"
+                  name="salePrice"
+                  defaultValue={product.salePrice ? Number(product.salePrice) : ''}
+                  min="0"
+                  step="0.01"
+                  className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]"
+                />
+              </div>
+              <Button type="submit" variant="primary" className="w-full">Update Price</Button>
+            </form>
+          </div>
+
           {/* Inventory Form */}
           <div className="card p-[var(--space-5)]">
             <h2 className="text-[var(--text-base)] font-semibold mb-[var(--space-3)]">Inventory Management</h2>
