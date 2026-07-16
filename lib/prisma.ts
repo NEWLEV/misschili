@@ -1,14 +1,29 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
-// Prisma v7 requires an adapter for direct database connections
+// Prisma v7 requires an adapter for direct database connections.
+// PrismaMariaDb takes discrete connection fields rather than a URL, so we
+// parse DATABASE_URL here to keep it the single source of truth elsewhere.
+export function parseDatabaseUrl(connectionString: string) {
+  const url = new URL(connectionString);
+  return {
+    host: url.hostname,
+    port: url.port ? Number(url.port) : 3306,
+    user: decodeURIComponent(url.username),
+    password: decodeURIComponent(url.password),
+    database: url.pathname.replace(/^\//, ''),
+  };
+}
+
 function createPrismaClient() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     // Return a mock during builds without a database — routes handle missing DB gracefully
     console.warn('[Prisma] DATABASE_URL not set. Queries will fail at runtime.');
   }
-  const adapter = new PrismaPg({ connectionString: connectionString || '' });
+  const adapter = new PrismaMariaDb(
+    connectionString ? parseDatabaseUrl(connectionString) : { host: '', port: 3306, user: '', password: '', database: '' }
+  );
   return new PrismaClient({ adapter });
 }
 

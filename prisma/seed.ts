@@ -1,9 +1,10 @@
 import { PrismaClient, UserRole, ProductStatus, PopupType, PopupFrequency, SettingType } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import bcrypt from 'bcryptjs';
+import { parseDatabaseUrl } from '../lib/prisma';
 
 // Prisma v7 requires a driver adapter (see lib/prisma.ts)
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL || '' });
+const adapter = new PrismaMariaDb(parseDatabaseUrl(process.env.DATABASE_URL || ''));
 const prisma = new PrismaClient({ adapter });
 
 async function main() {

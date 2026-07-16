@@ -1,20 +1,21 @@
 services:
-  postgres:
-    image: postgres:16-alpine
+  mariadb:
+    image: mariadb:11
     container_name: misschili-db
     environment:
-      POSTGRES_DB: misschili
-      POSTGRES_USER: misschili
-      POSTGRES_PASSWORD: misschili_dev_2024
+      MARIADB_DATABASE: misschili
+      MARIADB_USER: misschili
+      MARIADB_PASSWORD: misschili_dev_2024
+      MARIADB_ROOT_PASSWORD: misschili_dev_2024
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mysqldata:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U misschili"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  pgdata:
+  mysqldata:
