@@ -58,6 +58,11 @@ export async function POST(request: NextRequest) {
         const shippingAddress = JSON.parse(metadata.shippingAddress || '{}') as AddressMeta;
         const contactInfo = JSON.parse(metadata.contactInfo || '{}') as ContactMeta;
         const orderNumber = generateOrderNumber();
+        const userId = metadata.userId || null;
+        const couponId = metadata.couponId || null;
+        const discountAmount = Number(metadata.discountAmount || 0);
+        const shippingCost = Number(metadata.shippingCost || 0);
+        const taxAmount = Number(metadata.taxAmount || 0);
 
         const products = await prisma.product.findMany({
           where: { id: { in: orderItems.map((i) => i.id) } },
@@ -71,11 +76,14 @@ export async function POST(request: NextRequest) {
         const order = await prisma.order.create({
           data: {
             orderNumber,
+            userId,
             guestEmail: session.customer_email || contactInfo.email || null,
             status: 'CONFIRMED',
             subtotal: (session.amount_subtotal || 0) / 100,
-            shippingCost: 0,
-            taxAmount: 0,
+            shippingCost,
+            taxAmount,
+            discountAmount,
+            couponId,
             total: totalAmount,
             items: {
               create: orderItems.map((item) => {
@@ -119,6 +127,14 @@ export async function POST(request: NextRequest) {
           },
           include: { items: true },
         });
+
+        // Record coupon usage
+        if (couponId) {
+          await prisma.coupon.update({ where: { id: couponId }, data: { usedCount: { increment: 1 } } });
+          if (userId) {
+            await prisma.couponUsage.create({ data: { userId, couponId, orderId: order.id } });
+          }
+        }
 
         // Update inventory
         for (const item of orderItems) {

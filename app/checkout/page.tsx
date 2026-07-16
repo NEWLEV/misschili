@@ -15,12 +15,39 @@ export default function CheckoutPage() {
     address1: '', address2: '', city: '', state: '', zipCode: '', country: 'US',
     shippingMethod: 'standard',
   });
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
+  const [couponError, setCouponError] = useState('');
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   const shippingCost = subtotal >= 50 ? 0 : 7.99;
   const tax = subtotal * 0.07;
-  const total = subtotal + shippingCost + tax;
+  const discount = appliedCoupon?.discountAmount ?? 0;
+  const total = Math.max(subtotal + shippingCost + tax - discount, 0);
 
   const updateField = (field: string, value: string) => setFormData((prev) => ({ ...prev, [field]: value }));
+
+  const handleApplyCoupon = async () => {
+    setCouponError('');
+    setIsApplyingCoupon(true);
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: couponCode, subtotal }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAppliedCoupon({ code: data.data.code, discountAmount: data.data.discountAmount });
+      } else {
+        setAppliedCoupon(null);
+        setCouponError(data.error || 'Invalid coupon code');
+      }
+    } catch {
+      setCouponError('Failed to apply coupon. Please try again.');
+    }
+    setIsApplyingCoupon(false);
+  };
 
   const handleCheckout = async () => {
     setIsLoading(true);
@@ -34,6 +61,7 @@ export default function CheckoutPage() {
             contact: { email: formData.email, firstName: formData.firstName, lastName: formData.lastName, phone: formData.phone },
             shippingAddress: { address1: formData.address1, address2: formData.address2, city: formData.city, state: formData.state, zipCode: formData.zipCode, country: formData.country },
             shippingMethod: formData.shippingMethod, sameAsBilling: true,
+            couponCode: appliedCoupon?.code,
           },
         }),
       });
@@ -125,10 +153,35 @@ export default function CheckoutPage() {
               </div>
             ))}
           </div>
+          {/* Coupon Code */}
+          <div className="pt-[var(--space-3)] border-t border-[var(--color-border)] mb-[var(--space-3)]">
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between text-[var(--text-sm)]">
+                <span className="text-[var(--color-success)]">Coupon <span className="font-mono font-semibold">{appliedCoupon.code}</span> applied</span>
+                <button type="button" onClick={() => { setAppliedCoupon(null); setCouponCode(''); }} className="text-[var(--color-text-muted)] hover:text-[var(--color-text)]">Remove</button>
+              </div>
+            ) : (
+              <div className="flex gap-[var(--space-2)]">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Coupon code"
+                  className="flex-1 h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--text-sm)] uppercase"
+                />
+                <Button type="button" variant="outline" size="sm" isLoading={isApplyingCoupon} disabled={!couponCode} onClick={handleApplyCoupon}>Apply</Button>
+              </div>
+            )}
+            {couponError && <p className="text-[var(--text-xs)] text-[var(--color-danger)] mt-[var(--space-2)]">{couponError}</p>}
+          </div>
+
           <div className="space-y-[var(--space-2)] text-[var(--text-sm)] pt-[var(--space-3)] border-t border-[var(--color-border)]">
             <div className="flex justify-between"><span className="text-[var(--color-text-secondary)]">Subtotal</span><span className="tabular-nums">{formatPrice(subtotal)}</span></div>
             <div className="flex justify-between"><span className="text-[var(--color-text-secondary)]">Shipping</span><span className="tabular-nums">{shippingCost === 0 ? 'Free' : formatPrice(shippingCost)}</span></div>
             <div className="flex justify-between"><span className="text-[var(--color-text-secondary)]">Tax</span><span className="tabular-nums">{formatPrice(tax)}</span></div>
+            {discount > 0 && (
+              <div className="flex justify-between text-[var(--color-success)]"><span>Discount</span><span className="tabular-nums">−{formatPrice(discount)}</span></div>
+            )}
             <div className="flex justify-between pt-[var(--space-2)] border-t border-[var(--color-border)]"><span className="font-semibold">Total</span><span className="text-[var(--text-lg)] font-bold tabular-nums">{formatPrice(total)}</span></div>
           </div>
         </div>

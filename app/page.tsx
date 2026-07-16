@@ -45,10 +45,20 @@ async function getFeaturedReviews() {
 }
 
 export default async function HomePage() {
-  const [{ products: featuredProducts }, reviews] = await Promise.all([
+  const [{ products: featuredProducts }, reviews, settings] = await Promise.all([
     getProducts({ featured: true, limit: 4 }),
     getFeaturedReviews(),
+    prisma.siteSetting.findMany(),
   ]);
+  const getSetting = (key: string, fallback: string) => settings.find((s) => s.key === key)?.value ?? fallback;
+
+  const heroHeadline = getSetting('hero_headline', 'Ghost Pepper Heat. Miami Soul.');
+  const heroSubtext = getSetting(
+    'hero_subtext',
+    'Born in a backyard garden. Popularized by the sailing club. Two small-batch sauces that bring bold flavor and real heat to everything they touch.'
+  );
+  const heroCtaText = getSetting('hero_cta_text', 'Shop Our Sauces');
+  const heroCtaUrl = getSetting('hero_cta_url', '/products');
 
   return (
     <>
@@ -66,27 +76,24 @@ export default async function HomePage() {
                 Handcrafted in Miami 🌶️
               </p>
               <h1
-                className="text-[var(--text-5xl)] font-bold mb-[var(--space-5)] animate-slide-up"
+                className="text-[var(--text-5xl)] font-bold mb-[var(--space-5)] animate-slide-up text-gradient-fire"
                 style={{ fontFamily: 'var(--font-display)', animationDelay: '100ms' }}
               >
-                Ghost Pepper Heat.{' '}
-                <span className="text-gradient-fire">Miami Soul.</span>
+                {heroHeadline}
               </h1>
               <p
                 className="text-[var(--text-lg)] text-[var(--color-text-secondary)] mb-[var(--space-8)] max-w-lg animate-slide-up"
                 style={{ animationDelay: '200ms' }}
               >
-                Born in a backyard garden. Popularized by the sailing club.
-                Two small-batch sauces that bring bold flavor and real heat
-                to everything they touch.
+                {heroSubtext}
               </p>
               <div
                 className="flex flex-wrap gap-[var(--space-3)] animate-slide-up"
                 style={{ animationDelay: '300ms' }}
               >
-                <Link href="/products">
+                <Link href={heroCtaUrl}>
                   <Button variant="primary" size="lg">
-                    Shop Our Sauces
+                    {heroCtaText}
                   </Button>
                 </Link>
                 <Link href="#about">

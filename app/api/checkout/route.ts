@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
+import { validateCoupon } from '@/lib/coupons';
 import { apiSuccess, apiError } from '@/lib/utils';
 import { checkoutSchema } from '@/lib/validations';
 
@@ -81,6 +83,31 @@ export async function POST(request: NextRequest) {
     }
 
     const shippingCost = subtotal >= 50 ? 0 : 7.99;
+    const taxAmount = Math.round(subtotal * 0.07 * 100) / 100;
+
+    const session = await auth();
+
+    // Re-validate the coupon server-side — never trust a client-computed discount.
+    let couponId: string | undefined;
+    let discountAmount = 0;
+    if (checkout.couponCode) {
+      const couponResult = await validateCoupon(checkout.couponCode, subtotal, session?.user?.id);
+      if (!couponResult.valid) {
+        return NextResponse.json(apiError(couponResult.error || 'Invalid coupon code'), { status: 400 });
+      }
+      couponId = couponResult.couponId;
+      discountAmount = couponResult.discountAmount || 0;
+    }
+
+    let stripeCouponId: string | undefined;
+    if (discountAmount > 0) {
+      const stripeCoupon = await stripe.coupons.create({
+        amount_off: Math.round(discountAmount * 100),
+        currency: 'usd',
+        duration: 'once',
+      });
+      stripeCouponId = stripeCoupon.id;
+    }
 
     // Create Stripe checkout session
     const stripeSession = await stripe.checkout.sessions.create({
@@ -113,6 +140,7 @@ export async function POST(request: NextRequest) {
           },
         },
       ],
+      ...(stripeCouponId ? { discounts: [{ coupon: stripeCouponId }] } : {}),
       customer_email: checkout.contact.email,
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order-confirmation/{CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
@@ -120,6 +148,11 @@ export async function POST(request: NextRequest) {
         orderItems: JSON.stringify(lineItems.map((i) => ({ id: i.productId, qty: i.quantity }))),
         shippingAddress: JSON.stringify(checkout.shippingAddress),
         contactInfo: JSON.stringify(checkout.contact),
+        userId: session?.user?.id || '',
+        shippingCost: String(shippingCost),
+        taxAmount: String(taxAmount),
+        couponId: couponId || '',
+        discountAmount: String(discountAmount),
       },
     });
 
