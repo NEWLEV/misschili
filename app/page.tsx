@@ -53,7 +53,9 @@ export default async function HomePage() {
   return (
     <>
       {/* ─── Hero Section ─────────────────────────────── */}
-      <section className="relative overflow-hidden min-h-[85vh] flex items-center">
+      {/* Scoped to the dark theme regardless of site theme: FlameBackground is
+          always a dark fire animation, so text here must stay light-on-dark. */}
+      <section data-theme="dark" className="relative overflow-hidden min-h-[85vh] flex items-center">
         {/* Background */}
         <FlameBackground />
 
@@ -153,7 +155,9 @@ export default async function HomePage() {
       </section>
 
       {/* ─── Origin Story ─────────────────────────────── */}
-      <section id="about" className="section-padding relative overflow-hidden">
+      {/* Scoped to the dark theme: the background image has a fixed dark
+          overlay regardless of site theme, so text here must stay light-on-dark. */}
+      <section id="about" data-theme="dark" className="section-padding relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/images/backgrounds/background-with-green-peppers-2026-01-08-06-37-16-utc.jpg"

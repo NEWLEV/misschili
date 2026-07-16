@@ -53,7 +53,7 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-[var(--z-modal)] bg-transparent p-0 m-0 w-full h-full max-w-full max-h-full"
+      className="fixed inset-0 z-[var(--z-modal)] bg-transparent text-[var(--color-text)] p-0 m-0 w-full h-full max-w-full max-h-full"
       onClick={(e) => {
         if (e.target === dialogRef.current) onClose();
       }}
@@ -61,7 +61,7 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
       <div className="flex items-center justify-center min-h-full p-[var(--space-4)]">
         <div
           className={cn(
-            'w-full bg-[var(--color-surface)] rounded-[var(--radius-xl)]',
+            'w-full bg-[var(--color-surface)] text-[var(--color-text)] rounded-[var(--radius-xl)]',
             'border border-[var(--color-border)]',
             'shadow-[var(--shadow-xl)]',
             'animate-slide-up',
@@ -73,7 +73,7 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
         >
           {title && (
             <div className="flex items-center justify-between mb-[var(--space-5)]">
-              <h3 className="text-[var(--text-xl)] font-semibold">{title}</h3>
+              <h3 className="text-[var(--text-xl)] font-semibold text-[var(--color-text)]">{title}</h3>
               <button
                 onClick={onClose}
                 className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-md)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"

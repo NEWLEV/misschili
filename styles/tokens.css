@@ -88,6 +88,8 @@
 /* ─── Dark Theme (Default) ──────────────────────── */
 [data-theme="dark"],
 :root {
+  color-scheme: dark;
+
   --color-bg:              oklch(0.13 0.01 30);
   --color-bg-alt:          oklch(0.10 0.008 30);
   --color-surface:         oklch(0.18 0.012 30);
@@ -123,6 +125,8 @@
 
 /* ─── Light Theme ───────────────────────────────── */
 [data-theme="light"] {
+  color-scheme: light;
+
   --color-bg:              oklch(0.97 0.005 80);
   --color-bg-alt:          oklch(0.94 0.008 70);
   --color-surface:         oklch(1.0 0 0);
