@@ -72,9 +72,6 @@ export default async function HomePage() {
         <div className="section-container relative z-10 py-[var(--space-20)]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--space-12)] items-center">
             <div className="max-w-xl">
-              <p className="text-[var(--text-sm)] font-semibold text-white tracking-[var(--tracking-wider)] uppercase mb-[var(--space-4)] animate-fade-in">
-                Handcrafted in Miami 🌶️
-              </p>
               <h1
                 className="text-[var(--text-5xl)] font-bold mb-[var(--space-5)] animate-slide-up text-gradient-fire"
                 style={{ fontFamily: 'var(--font-display)', animationDelay: '100ms' }}
