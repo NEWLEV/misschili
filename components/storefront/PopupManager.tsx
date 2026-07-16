@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
@@ -54,6 +54,10 @@ export function PopupManager() {
   const { itemCount } = useCart();
   const [popups, setPopups] = useState<Popup[]>([]);
   const [activePopup, setActivePopup] = useState<Popup | null>(null);
+  // Popups already surfaced during this page load, regardless of frequency.
+  // Without this, closing an EVERY_VISIT popup re-triggers the same
+  // eligibility check on the next effect run and shows it again immediately.
+  const shownThisLoadRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (isAdminRoute) return;
@@ -68,9 +72,12 @@ export function PopupManager() {
   const showNext = useCallback(
     (candidates: Popup[]) => {
       const eligible = candidates
-        .filter((p) => isEligible(p, pathname))
+        .filter((p) => !shownThisLoadRef.current.has(p.id) && isEligible(p, pathname))
         .sort((a, b) => a.sortOrder - b.sortOrder);
-      if (eligible.length > 0) setActivePopup(eligible[0]);
+      if (eligible.length > 0) {
+        shownThisLoadRef.current.add(eligible[0].id);
+        setActivePopup(eligible[0]);
+      }
     },
     [pathname]
   );
@@ -78,7 +85,9 @@ export function PopupManager() {
   useEffect(() => {
     if (popups.length === 0 || activePopup) return;
 
-    const immediate = popups.filter((p) => p.type === 'COOKIE_CONSENT');
+    const immediate = popups.filter(
+      (p) => p.type === 'COOKIE_CONSENT' && !shownThisLoadRef.current.has(p.id) && isEligible(p, pathname)
+    );
     if (immediate.length > 0) {
       showNext(immediate);
       return;
