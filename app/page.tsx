@@ -185,30 +185,48 @@ export default async function HomePage() {
                 Our Origin
               </p>
               <h2 className="text-[var(--text-4xl)] font-bold mb-[var(--space-5)] text-white" style={{ fontFamily: 'var(--font-display)' }}>
-                It Started With a Garden
+                The Founder&apos;s Story
               </h2>
               <div className="space-y-[var(--space-4)] text-white/85 text-[var(--text-base)]">
                 <p>
-                  Miss Chili started the way all great things do — by accident. A backyard garden
-                  in Miami overflowing with ghost peppers and no idea what to do with them all.
+                  Miss Chili&apos;s journey began with a single, unexpected gift: a ghost pepper
+                  plant. That one seedling sparked a deep-rooted passion for the craft of cultivating
+                  peppers and herbs. What started as a casual hobby soon transformed into a delicious
+                  obsession, a relentless pursuit of the perfect balance between fire and flavor,
+                  harvested straight from the soil.
                 </p>
                 <p>
-                  The first batch was shared at the local sailing club. Within a week, the phone
-                  wouldn&apos;t stop ringing. Members wanted bottles for themselves, then for their
-                  friends, then for their restaurants. Word of mouth did what no marketing budget could.
+                  Drawing on over two decades of hospitality experience, spanning the heat of the
+                  kitchen to the craft of bartending and the leadership of general management, I began
+                  sharing my small-batch creations with guests. Whether splashed over a signature dish
+                  or stirred into a spirited Bloody Mary, my sauces were designed for those brave
+                  enough to seek a little extra kick. The response was immediate: people didn&apos;t
+                  just want a taste; they wanted a bottle. It was clear that Miss Chili wasn&apos;t
+                  just a condiment, it was an experience.
                 </p>
                 <p>
-                  Today, Miss Chili is still made in small batches with fresh ingredients — distilled
-                  white vinegar, real garlic, sweet basil, cilantro, and of course, the peppers that
-                  started it all. No artificial preservatives. No filler. Just heat, flavor, and the
-                  kind of kick that keeps you coming back.
+                  That&apos;s when the vision crystallized: to build a brand defined by flavor,
+                  attitude, and irresistible heat. I wanted a brand that didn&apos;t just sit quietly
+                  on the shelf, but one that flirted with the senses and pulled you in with a wink and
+                  a smile before the first drop even hit your tongue.
+                </p>
+                <p>And so, Miss Chili was born.</p>
+                <p>
+                  She is the perfect embodiment of the sauce itself: bold, playful, confident, and
+                  utterly unforgettable. With a look that turns heads and a flavor that flirts back,
+                  she&apos;s a character that people connect with instantly.
+                </p>
+                <p>
+                  Evolving from late-night kitchen experiments to a full-fledged brand, Miss Chili has
+                  become a sensation. Fans have fallen for her bold attitude and, above all, the
+                  exceptional flavor that keeps them coming back for more.
                 </p>
               </div>
               <p
                 className="text-[var(--text-xl)] font-bold text-white mt-[var(--space-6)] italic"
                 style={{ fontFamily: 'var(--font-display)' }}
               >
-                &ldquo;Shake Her Well, Pour Her Slow.&rdquo;
+                Miss Chili. Just the way you like it.
               </p>
             </div>
             <div className="lg:col-span-2 flex justify-center">
