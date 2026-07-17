@@ -26,7 +26,7 @@ export default async function AdminContentPage() {
         <Input label="Hero Headline" name="hero_headline" defaultValue={get('hero_headline', 'Ghost Pepper Heat. Miami Soul.')} />
         <div>
           <label className="block text-(--text-sm) font-medium mb-1">Hero Subtext</label>
-          <textarea name="hero_subtext" rows={3} defaultValue={get('hero_subtext', 'Born in a backyard garden. Popularized by the sailing club. Two small-batch sauces that bring bold flavor and real heat to everything they touch.')} className="w-full p-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)"></textarea>
+          <textarea name="hero_subtext" rows={3} defaultValue={get('hero_subtext', 'Born in a backyard garden. Popularized by the sailing club. Two small-batch sauces that bring bold flavor and real heat to everything they touch.')} className="w-full p-3 rounded-md bg-(--color-bg) border border-(--color-border)"></textarea>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <Input label="Hero CTA Button Text" name="hero_cta_text" defaultValue={get('hero_cta_text', 'Shop Our Sauces')} />

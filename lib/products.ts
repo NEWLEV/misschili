@@ -72,9 +72,12 @@ export async function getProducts(options: GetProductsOptions = {}) {
   const where: Record<string, any> = { status: 'ACTIVE' };
   if (category) where.categories = { some: { category: { slug: category } } };
   if (featured) where.isFeatured = true;
+  // `mode: 'insensitive'` is a Postgres/MongoDB-only Prisma option — MariaDB's
+  // default collation is already case-insensitive, and passing it here throws
+  // a PrismaClientValidationError on every search request against MySQL.
   if (search) where.OR = [
-    { name: { contains: search, mode: 'insensitive' } },
-    { description: { contains: search, mode: 'insensitive' } },
+    { name: { contains: search } },
+    { description: { contains: search } },
   ];
 
   const ORDER_MAP: Record<string, object> = {

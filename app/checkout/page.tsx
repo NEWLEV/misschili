@@ -1,15 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useCart } from '@/components/storefront/CartProvider';
 import { formatPrice } from '@/lib/utils';
 
+const DEFAULT_SETTINGS = { taxRate: 0.07, freeShippingThreshold: 50, flatShippingRate: 7.99 };
+
 export default function CheckoutPage() {
   const { items, subtotal } = useCart();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [formData, setFormData] = useState({
     email: '', firstName: '', lastName: '', phone: '',
     address1: '', address2: '', city: '', state: '', zipCode: '', country: 'US',
@@ -19,9 +23,21 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
   const [couponError, setCouponError] = useState('');
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  // One nonce per checkout attempt — sent as a Stripe idempotency key so a
+  // double-click or a retried request can't create two paid sessions.
+  const checkoutNonceRef = useRef<string>(crypto.randomUUID());
 
-  const shippingCost = subtotal >= 50 ? 0 : 7.99;
-  const tax = subtotal * 0.07;
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setSettings(data.data);
+      })
+      .catch(() => { /* fall back to DEFAULT_SETTINGS */ });
+  }, []);
+
+  const shippingCost = subtotal >= settings.freeShippingThreshold ? 0 : settings.flatShippingRate;
+  const tax = subtotal * settings.taxRate;
   const discount = appliedCoupon?.discountAmount ?? 0;
   const total = Math.max(subtotal + shippingCost + tax - discount, 0);
 
@@ -34,7 +50,7 @@ export default function CheckoutPage() {
       const res = await fetch('/api/coupons/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: couponCode, subtotal }),
+        body: JSON.stringify({ code: couponCode, subtotal, email: formData.email || undefined }),
       });
       const data = await res.json();
       if (data.success) {
@@ -63,6 +79,7 @@ export default function CheckoutPage() {
             shippingMethod: formData.shippingMethod, sameAsBilling: true,
             couponCode: appliedCoupon?.code,
           },
+          checkoutNonce: checkoutNonceRef.current,
         }),
       });
       const data = await res.json();
@@ -76,7 +93,7 @@ export default function CheckoutPage() {
       <div className="section-container section-padding text-center">
         <h1 className="text-(--text-3xl) font-bold mb-(--space-4)">Your cart is empty</h1>
         <p className="text-(--color-text-secondary) mb-6">Add some sauces before checking out.</p>
-        <a href="/products"><Button variant="primary">Shop Now</Button></a>
+        <Link href="/products"><Button variant="primary">Shop Now</Button></Link>
       </div>
     );
   }
@@ -130,7 +147,7 @@ export default function CheckoutPage() {
             <div className="card p-(--space-6) space-y-(--space-4)">
               <h2 className="text-(--text-xl) font-semibold">Payment</h2>
               <p className="text-(--color-text-secondary)">You will be redirected to Stripe&apos;s secure checkout to complete your payment.</p>
-              <div className="flex items-center gap-(--space-3) p-(--space-4) rounded-(--radius-md) bg-(--color-bg)">
+              <div className="flex items-center gap-(--space-3) p-(--space-4) rounded-md bg-(--color-bg)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
                 <span className="text-(--text-sm) text-(--color-text-secondary)">256-bit SSL encryption · Your payment info is never stored on our servers.</span>
               </div>
@@ -167,7 +184,7 @@ export default function CheckoutPage() {
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                   placeholder="Coupon code"
-                  className="flex-1 h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border) text-(--text-sm) uppercase"
+                  className="flex-1 h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border) text-(--text-sm) uppercase"
                 />
                 <Button type="button" variant="outline" size="sm" isLoading={isApplyingCoupon} disabled={!couponCode} onClick={handleApplyCoupon}>Apply</Button>
               </div>

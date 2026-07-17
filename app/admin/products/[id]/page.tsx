@@ -2,8 +2,17 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { updateInventory, updatePrice, updateProduct } from './actions';
+import {
+  updateInventory,
+  updatePrice,
+  updateProduct,
+  addProductImage,
+  deleteProductImage,
+  setFeaturedImage,
+  reorderProductImage,
+} from './actions';
 import { Button } from '@/components/ui/Button';
+import { ConfirmSubmitButton } from '@/components/admin/ConfirmSubmitButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +22,7 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
     prisma.product.findUnique({
       where: { id },
       include: {
-        images: true,
+        images: { orderBy: { sortOrder: 'asc' } },
         inventory: true,
         categories: { select: { categoryId: true } },
       },
@@ -61,44 +70,44 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Name</label>
                 <input name="name" defaultValue={product.name} required
-                  className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)" />
+                  className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)" />
               </div>
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Slug</label>
                 <input name="slug" defaultValue={product.slug} required
-                  className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)" />
+                  className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)" />
               </div>
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">SKU</label>
                 <input name="sku" defaultValue={product.sku} required
-                  className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)" />
+                  className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)" />
               </div>
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Description</label>
                 <textarea name="description" defaultValue={product.description} required rows={4}
-                  className="w-full p-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)" />
+                  className="w-full p-3 rounded-md bg-(--color-bg) border border-(--color-border)" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-(--text-sm) font-medium mb-1">Heat Level (1-10)</label>
                   <input type="number" name="heatLevel" min="1" max="10" defaultValue={product.heatLevel ?? ''}
-                    className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)" />
+                    className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)" />
                 </div>
                 <div>
                   <label className="block text-(--text-sm) font-medium mb-1">Volume</label>
                   <input name="volume" defaultValue={product.volume ?? ''} placeholder="5 fl oz (148 ml)"
-                    className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)" />
+                    className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)" />
                 </div>
               </div>
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Ingredients</label>
                 <textarea name="ingredients" defaultValue={product.ingredients ?? ''} rows={2}
-                  className="w-full p-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)" />
+                  className="w-full p-3 rounded-md bg-(--color-bg) border border-(--color-border)" />
               </div>
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Status</label>
                 <select name="status" defaultValue={product.status}
-                  className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)">
+                  className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)">
                   <option value="DRAFT">Draft</option>
                   <option value="ACTIVE">Active</option>
                   <option value="ARCHIVED">Archived (disabled)</option>
@@ -126,17 +135,67 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
           </div>
 
           <div className="card p-(--space-6)">
-            <h2 className="text-(--text-lg) font-semibold mb-(--space-4)">Images</h2>
-            <div className="flex gap-(--space-4) overflow-x-auto pb-2">
-              {product.images.map((img) => (
-                <div key={img.id} className="relative w-24 h-24 bg-(--color-bg-alt) rounded-md border border-(--color-border) shrink-0 flex items-center justify-center">
-                  <Image src={img.url} alt={img.altText || product.name} width={64} height={64} className="max-h-20 w-auto object-contain" />
+            <h2 className="text-(--text-lg) font-semibold mb-(--space-1)">Images</h2>
+            <p className="text-(--text-xs) text-(--color-text-muted) mb-(--space-4)">
+              Upload to Cloudinary (or the site&apos;s media host) first, then paste the resulting URL below.
+            </p>
+            <div className="flex flex-col gap-(--space-3) mb-(--space-5)">
+              {product.images.map((img, i) => (
+                <div key={img.id} className="flex items-center gap-(--space-3) p-(--space-2) rounded-md border border-(--color-border)">
+                  <div className="relative w-16 h-16 bg-(--color-bg-alt) rounded-md shrink-0 flex items-center justify-center">
+                    <Image src={img.url} alt={img.altText || product.name} width={48} height={48} className="max-h-14 w-auto object-contain" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-(--text-xs) font-mono truncate">{img.url}</p>
+                    {img.isFeatured && <span className="badge badge-primary text-[10px] mt-1 inline-block">Featured</span>}
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <form action={async () => { 'use server'; await reorderProductImage(img.id, 'up'); }}>
+                      <button type="submit" disabled={i === 0} aria-label="Move image up" className="w-8 h-8 rounded-md hover:bg-(--color-surface-hover) disabled:opacity-30 disabled:cursor-not-allowed">↑</button>
+                    </form>
+                    <form action={async () => { 'use server'; await reorderProductImage(img.id, 'down'); }}>
+                      <button type="submit" disabled={i === product.images.length - 1} aria-label="Move image down" className="w-8 h-8 rounded-md hover:bg-(--color-surface-hover) disabled:opacity-30 disabled:cursor-not-allowed">↓</button>
+                    </form>
+                    {!img.isFeatured && (
+                      <form action={async () => { 'use server'; await setFeaturedImage(img.id); }}>
+                        <button type="submit" className="text-(--text-xs) px-2 h-8 rounded-md hover:bg-(--color-surface-hover)">Set featured</button>
+                      </form>
+                    )}
+                    <ConfirmSubmitButton
+                      action={async () => await deleteProductImage(img.id)}
+                      confirmMessage="Remove this image from the product?"
+                      variant="ghost"
+                      className="h-8! px-2! text-(--color-danger)"
+                    >
+                      Remove
+                    </ConfirmSubmitButton>
+                  </div>
                 </div>
               ))}
               {product.images.length === 0 && (
-                <p className="text-(--text-sm) text-(--color-text-muted)">No images available.</p>
+                <p className="text-(--text-sm) text-(--color-text-muted)">No images yet.</p>
               )}
             </div>
+
+            <form
+              action={async (formData) => {
+                'use server';
+                await addProductImage(product.id, formData.get('url') as string, (formData.get('altText') as string) || '');
+              }}
+              className="flex gap-(--space-2) items-end border-t border-(--color-border) pt-(--space-4)"
+            >
+              <div className="flex-1">
+                <label className="block text-(--text-xs) font-medium mb-1">Image URL</label>
+                <input name="url" type="url" required placeholder="https://res.cloudinary.com/…"
+                  className="w-full h-9 px-3 rounded-md bg-(--color-bg) border border-(--color-border) text-(--text-sm)" />
+              </div>
+              <div className="flex-1">
+                <label className="block text-(--text-xs) font-medium mb-1">Alt Text</label>
+                <input name="altText" placeholder={product.name}
+                  className="w-full h-9 px-3 rounded-md bg-(--color-bg) border border-(--color-border) text-(--text-sm)" />
+              </div>
+              <Button type="submit" variant="outline" size="sm">Add</Button>
+            </form>
           </div>
         </div>
 
@@ -163,7 +222,7 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
                   required
                   min="0"
                   step="0.01"
-                  className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)"
+                  className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)"
                 />
               </div>
               <div>
@@ -174,7 +233,7 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
                   defaultValue={product.salePrice ? Number(product.salePrice) : ''}
                   min="0"
                   step="0.01"
-                  className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)"
+                  className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)"
                 />
               </div>
               <Button type="submit" variant="primary" className="w-full">Update Price</Button>
@@ -200,7 +259,7 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
                   defaultValue={currentStock} 
                   required
                   min="0"
-                  className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)" 
+                  className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)" 
                 />
               </div>
               <div>
@@ -211,7 +270,7 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
                   defaultValue={lowStockThreshold} 
                   required
                   min="0"
-                  className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)" 
+                  className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)" 
                 />
               </div>
               

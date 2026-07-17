@@ -39,6 +39,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Miss Chili Hot Sauce',
     description: 'Ghost Pepper Heat, Miami Soul. Handcrafted hot sauces from Miami, FL.',
+    images: ['/images/logos/MissChili_Logos_MissChili.png'],
   },
   robots: {
     index: true,
@@ -80,6 +81,12 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-100 focus:px-4 focus:py-2 focus:rounded-md focus:bg-(--color-primary) focus:text-white focus:font-semibold"
+        >
+          Skip to main content
+        </a>
         <ThemeProvider>
           <CartProvider>
             <Header />

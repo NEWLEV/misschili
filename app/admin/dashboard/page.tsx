@@ -42,19 +42,19 @@ export default async function AdminDashboardPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-(--space-4) mb-(--space-8)">
         <div className="card p-(--space-5)">
-          <p className="text-(--text-xs) text-(--color-text-muted) uppercase tracking-(--tracking-wider) mb-(--space-2)">Revenue (MTD)</p>
+          <p className="text-(--text-xs) text-(--color-text-muted) uppercase tracking-wider mb-(--space-2)">Revenue (MTD)</p>
           <p className="text-(--text-2xl) font-bold tabular-nums" style={{ fontVariantNumeric: 'tabular-nums lining-nums' }}>{formatPrice(revenue)}</p>
         </div>
         <div className="card p-(--space-5)">
-          <p className="text-(--text-xs) text-(--color-text-muted) uppercase tracking-(--tracking-wider) mb-(--space-2)">Orders (MTD)</p>
+          <p className="text-(--text-xs) text-(--color-text-muted) uppercase tracking-wider mb-(--space-2)">Orders (MTD)</p>
           <p className="text-(--text-2xl) font-bold tabular-nums" style={{ fontVariantNumeric: 'tabular-nums lining-nums' }}>{orderCount}</p>
         </div>
         <div className="card p-(--space-5)">
-          <p className="text-(--text-xs) text-(--color-text-muted) uppercase tracking-(--tracking-wider) mb-(--space-2)">Avg Order Value</p>
+          <p className="text-(--text-xs) text-(--color-text-muted) uppercase tracking-wider mb-(--space-2)">Avg Order Value</p>
           <p className="text-(--text-2xl) font-bold tabular-nums" style={{ fontVariantNumeric: 'tabular-nums lining-nums' }}>{formatPrice(aov)}</p>
         </div>
         <div className="card p-(--space-5)">
-          <p className="text-(--text-xs) text-(--color-text-muted) uppercase tracking-(--tracking-wider) mb-(--space-2)">New Customers (MTD)</p>
+          <p className="text-(--text-xs) text-(--color-text-muted) uppercase tracking-wider mb-(--space-2)">New Customers (MTD)</p>
           <p className="text-(--text-2xl) font-bold tabular-nums" style={{ fontVariantNumeric: 'tabular-nums lining-nums' }}>{customersMtd}</p>
         </div>
       </div>
@@ -84,7 +84,7 @@ export default async function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-(--color-border)">
-                {recentOrders.map((order: any) => (
+                {recentOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-(--color-surface-hover) transition-colors">
                     <td className="px-(--space-4) py-(--space-3)">
                       <Link href={`/admin/orders/${order.id}`} className="font-semibold text-(--color-primary) hover:underline">

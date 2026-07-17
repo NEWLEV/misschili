@@ -5,6 +5,9 @@ import { auth } from '@/lib/auth';
 import { validateCoupon } from '@/lib/coupons';
 import { apiSuccess, apiError } from '@/lib/utils';
 import { checkoutSchema } from '@/lib/validations';
+import { getStoreSettings } from '@/lib/settings';
+import { logger } from '@/lib/logger';
+import crypto from 'crypto';
 
 interface CartItem {
   id: string;
@@ -24,7 +27,17 @@ interface LineItem {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { items, formData } = body as { items: CartItem[]; formData: unknown };
+    const { items, formData, checkoutNonce } = body as {
+      items: CartItem[];
+      formData: unknown;
+      checkoutNonce?: string;
+    };
+    // Idempotency key for the Stripe calls below — the client generates one nonce
+    // per checkout attempt and resends the same value on network retry, so a
+    // double-submit (double-click, retried fetch) can't create two paid sessions.
+    const idempotencyBase = typeof checkoutNonce === 'string' && checkoutNonce.length >= 8
+      ? checkoutNonce
+      : crypto.randomUUID();
 
     if (!items || items.length === 0) {
       return NextResponse.json(apiError('Cart is empty'), { status: 400 });
@@ -82,8 +95,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const shippingCost = subtotal >= 50 ? 0 : 7.99;
-    const taxAmount = Math.round(subtotal * 0.07 * 100) / 100;
+    const { taxRate, freeShippingThreshold, flatShippingRate } = await getStoreSettings();
+    const shippingCost = subtotal >= freeShippingThreshold ? 0 : flatShippingRate;
+    const taxAmount = Math.round(subtotal * taxRate * 100) / 100;
 
     const session = await auth();
 
@@ -91,7 +105,7 @@ export async function POST(request: NextRequest) {
     let couponId: string | undefined;
     let discountAmount = 0;
     if (checkout.couponCode) {
-      const couponResult = await validateCoupon(checkout.couponCode, subtotal, session?.user?.id);
+      const couponResult = await validateCoupon(checkout.couponCode, subtotal, session?.user?.id, checkout.contact.email);
       if (!couponResult.valid) {
         return NextResponse.json(apiError(couponResult.error || 'Invalid coupon code'), { status: 400 });
       }
@@ -101,64 +115,88 @@ export async function POST(request: NextRequest) {
 
     let stripeCouponId: string | undefined;
     if (discountAmount > 0) {
-      const stripeCoupon = await stripe.coupons.create({
-        amount_off: Math.round(discountAmount * 100),
-        currency: 'usd',
-        duration: 'once',
-      });
+      const stripeCoupon = await stripe.coupons.create(
+        {
+          amount_off: Math.round(discountAmount * 100),
+          currency: 'usd',
+          duration: 'once',
+        },
+        { idempotencyKey: `coupon-${idempotencyBase}` }
+      );
       stripeCouponId = stripeCoupon.id;
     }
 
+    // Tax is added as a real line item (rather than only stored on the Order
+    // row) so the amount Stripe actually charges matches the total shown to
+    // the customer on the storefront. Swap for Stripe Tax (automatic_tax) if
+    // the account is registered for tax collection in relevant jurisdictions.
+    const taxLineItem = taxAmount > 0
+      ? [{
+          price_data: {
+            currency: 'usd',
+            product_data: { name: 'Sales Tax' },
+            unit_amount: Math.round(taxAmount * 100),
+          },
+          quantity: 1,
+        }]
+      : [];
+
     // Create Stripe checkout session
-    const stripeSession = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: lineItems.map((item) => ({
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: item.productName,
-            images: item.imageUrl ? [`${process.env.NEXT_PUBLIC_APP_URL}${item.imageUrl}`] : [],
-          },
-          unit_amount: Math.round(item.unitPrice * 100),
-        },
-        quantity: item.quantity,
-      })),
-      shipping_options: [
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: {
-              amount: Math.round(shippingCost * 100),
+    const stripeSession = await stripe.checkout.sessions.create(
+      {
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: [
+          ...lineItems.map((item) => ({
+            price_data: {
               currency: 'usd',
+              product_data: {
+                name: item.productName,
+                images: item.imageUrl ? [`${process.env.NEXT_PUBLIC_APP_URL}${item.imageUrl}`] : [],
+              },
+              unit_amount: Math.round(item.unitPrice * 100),
             },
-            display_name: shippingCost === 0 ? 'Free Shipping' : 'Standard Shipping',
-            delivery_estimate: {
-              minimum: { unit: 'business_day', value: 3 },
-              maximum: { unit: 'business_day', value: 7 },
+            quantity: item.quantity,
+          })),
+          ...taxLineItem,
+        ],
+        shipping_options: [
+          {
+            shipping_rate_data: {
+              type: 'fixed_amount',
+              fixed_amount: {
+                amount: Math.round(shippingCost * 100),
+                currency: 'usd',
+              },
+              display_name: shippingCost === 0 ? 'Free Shipping' : 'Standard Shipping',
+              delivery_estimate: {
+                minimum: { unit: 'business_day', value: 3 },
+                maximum: { unit: 'business_day', value: 7 },
+              },
             },
           },
+        ],
+        ...(stripeCouponId ? { discounts: [{ coupon: stripeCouponId }] } : {}),
+        customer_email: checkout.contact.email,
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order-confirmation/{CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
+        metadata: {
+          orderItems: JSON.stringify(lineItems.map((i) => ({ id: i.productId, qty: i.quantity }))),
+          shippingAddress: JSON.stringify(checkout.shippingAddress),
+          contactInfo: JSON.stringify(checkout.contact),
+          userId: session?.user?.id || '',
+          shippingCost: String(shippingCost),
+          taxAmount: String(taxAmount),
+          couponId: couponId || '',
+          discountAmount: String(discountAmount),
         },
-      ],
-      ...(stripeCouponId ? { discounts: [{ coupon: stripeCouponId }] } : {}),
-      customer_email: checkout.contact.email,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order-confirmation/{CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
-      metadata: {
-        orderItems: JSON.stringify(lineItems.map((i) => ({ id: i.productId, qty: i.quantity }))),
-        shippingAddress: JSON.stringify(checkout.shippingAddress),
-        contactInfo: JSON.stringify(checkout.contact),
-        userId: session?.user?.id || '',
-        shippingCost: String(shippingCost),
-        taxAmount: String(taxAmount),
-        couponId: couponId || '',
-        discountAmount: String(discountAmount),
       },
-    });
+      { idempotencyKey: `checkout-${idempotencyBase}` }
+    );
 
     return NextResponse.json(apiSuccess({ sessionId: stripeSession.id, url: stripeSession.url }));
   } catch (error) {
-    console.error('[Checkout] Error:', error);
+    logger.error({ err: error }, '[Checkout] Error');
     return NextResponse.json(apiError('Failed to create checkout session'), { status: 500 });
   }
 }

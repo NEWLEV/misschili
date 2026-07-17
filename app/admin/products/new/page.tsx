@@ -26,7 +26,7 @@ export default async function NewProductPage() {
         <Input label="Slug" name="slug" required placeholder="fiery-heat-ghost-pepper" helperText="Lowercase letters, numbers, and hyphens only" />
         <div>
           <label className="block text-(--text-sm) font-medium mb-1">Description</label>
-          <textarea name="description" required rows={4} className="w-full p-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)"></textarea>
+          <textarea name="description" required rows={4} className="w-full p-3 rounded-md bg-(--color-bg) border border-(--color-border)"></textarea>
         </div>
         <Input label="SKU" name="sku" required />
 
@@ -42,12 +42,12 @@ export default async function NewProductPage() {
 
         <div>
           <label className="block text-(--text-sm) font-medium mb-1">Ingredients</label>
-          <textarea name="ingredients" rows={2} className="w-full p-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)"></textarea>
+          <textarea name="ingredients" rows={2} className="w-full p-3 rounded-md bg-(--color-bg) border border-(--color-border)"></textarea>
         </div>
 
         <div>
           <label className="block text-(--text-sm) font-medium mb-1">Status</label>
-          <select name="status" defaultValue="DRAFT" className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)">
+          <select name="status" defaultValue="DRAFT" className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)">
             <option value="DRAFT">Draft</option>
             <option value="ACTIVE">Active</option>
             <option value="ARCHIVED">Archived</option>

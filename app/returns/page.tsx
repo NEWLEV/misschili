@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Returns & Refunds' };
+export const metadata: Metadata = {
+  title: 'Returns & Refunds',
+  description: "Miss Chili Hot Sauce's return, refund, and exchange policy.",
+  alternates: { canonical: '/returns' },
+};
 
 export default function ReturnsPage() {
   return (

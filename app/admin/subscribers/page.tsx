@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import { Button } from '@/components/ui/Button';
 import { deleteSubscriber } from './actions';
+import { ConfirmSubmitButton } from '@/components/admin/ConfirmSubmitButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,12 +39,13 @@ export default async function AdminSubscribersPage() {
                     {new Date(subscriber.createdAt).toLocaleDateString()}
                   </td>
                   <td className="p-(--space-4) text-right">
-                    <form action={async () => {
-                      'use server';
-                      await deleteSubscriber(subscriber.id);
-                    }}>
-                      <Button type="submit" variant="ghost" size="sm">Remove</Button>
-                    </form>
+                    <ConfirmSubmitButton
+                      action={async () => await deleteSubscriber(subscriber.id)}
+                      confirmMessage={`Remove ${subscriber.email} from the subscriber list? This cannot be undone.`}
+                      variant="ghost"
+                    >
+                      Remove
+                    </ConfirmSubmitButton>
                   </td>
                 </tr>
               ))}

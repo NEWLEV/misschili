@@ -6,6 +6,7 @@ import { FeaturedProductsSection } from '@/components/storefront/FeaturedProduct
 import { NewsletterSignup } from '@/components/storefront/NewsletterSignup';
 import { getProducts } from '@/lib/products';
 import { prisma } from '@/lib/prisma';
+import { safeJsonLd } from '@/lib/json-ld';
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -181,7 +182,7 @@ export default async function HomePage() {
         <div className="section-container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-(--space-12) items-center">
             <div className="lg:col-span-3">
-              <p className="text-(--text-sm) font-semibold text-white tracking-(--tracking-wider) uppercase mb-(--space-3)">
+              <p className="text-(--text-sm) font-semibold text-white tracking-wider uppercase mb-(--space-3)">
                 Our Origin
               </p>
               <h2 className="text-(--text-4xl) font-bold mb-(--space-5) text-white" style={{ fontFamily: 'var(--font-display)' }}>
@@ -338,7 +339,7 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             '@context': 'https://schema.org',
             '@type': 'WebSite',
             name: 'Miss Chili Hot Sauce',
@@ -349,7 +350,7 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             '@context': 'https://schema.org',
             '@type': 'Organization',
             name: 'Miss Chili Hot Sauce, LLC',

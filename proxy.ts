@@ -21,6 +21,28 @@ function rateLimit(key: string, maxAttempts: number = 20, windowMs: number = 5 *
   return true;
 }
 
+// `X-Forwarded-For`'s leftmost entry is fully client-controlled and trivially
+// spoofable to bypass rate limiting entirely — a request can just set it to
+// a fresh random value every time. `X-Real-IP` and the *last* hop of
+// X-Forwarded-For are the values a well-behaved reverse proxy sets/appends
+// itself (overwriting whatever the client sent), so they're the safer
+// choice when the app sits behind exactly one trusted proxy. Verify this
+// matches the actual Hostinger edge topology in production — if requests
+// reach this app directly with no proxy in front, none of these headers
+// can be trusted and rate limiting needs a different signal entirely.
+function clientIp(request: NextRequest): string {
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp;
+
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    const hops = forwardedFor.split(',').map((h) => h.trim()).filter(Boolean);
+    if (hops.length > 0) return hops[hops.length - 1];
+  }
+
+  return 'unknown';
+}
+
 // Clean stale entries periodically
 setInterval(() => {
   const now = Date.now();
@@ -44,7 +66,13 @@ export async function proxy(request: NextRequest) {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://api.fontshare.com",
+      // 'unsafe-eval' is dropped in production — it's only needed by Next's
+      // dev-mode Fast Refresh, never by the shipped app. 'unsafe-inline' on
+      // script-src remains for now (the theme-bootstrap inline script and
+      // JSON-LD blocks aren't nonce-tagged yet); tightening that further
+      // needs a nonce plumbed from this proxy into layout.tsx and verified
+      // in a real browser before shipping, not guessed at blind.
+      `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ''} https://js.stripe.com https://api.fontshare.com`,
       "style-src 'self' 'unsafe-inline' https://api.fontshare.com",
       "font-src 'self' https://cdn.fontshare.com",
       "img-src 'self' data: blob: https:",
@@ -60,11 +88,12 @@ export async function proxy(request: NextRequest) {
     '/api/account/signup': 'Too many signup attempts. Please try again in 5 minutes.',
     '/api/account/forgot-password': 'Too many requests. Please try again in 5 minutes.',
     '/api/account/reset-password': 'Too many requests. Please try again in 5 minutes.',
+    '/api/coupons/validate': 'Too many attempts. Please try again in 5 minutes.',
   };
 
   if (pathname in rateLimitedRoutes) {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown';
-    const allowed = rateLimit(`${ip}:${pathname}`);
+    const ip = clientIp(request);
+    const allowed = rateLimit(`${ip}:${pathname}`, pathname === '/api/coupons/validate' ? 30 : 20);
 
     if (!allowed) {
       return NextResponse.json(

@@ -470,3 +470,22 @@ model SiteSetting {
 
   @@index([key])
 }
+
+// ─── Audit Log ──────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorEmail String?
+  actorRole  String?
+  action     String // e.g. "order.status_updated", "product.price_updated"
+  targetType String // e.g. "Order", "Product", "Coupon"
+  targetId   String
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId])
+  @@index([actorId])
+  @@index([createdAt])
+}

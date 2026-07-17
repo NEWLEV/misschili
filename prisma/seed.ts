@@ -1,6 +1,7 @@
 import { PrismaClient, UserRole, ProductStatus, PopupType, PopupFrequency, SettingType } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { parseDatabaseUrl } from '../lib/prisma';
 
 // Prisma v7 requires a driver adapter (see lib/prisma.ts)
@@ -10,8 +11,15 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log('🌶️ Seeding Miss Chili database...');
 
-  // Admin user
-  const adminHash = await bcrypt.hash('MissChili2024!', 12);
+  // Admin user — never a fixed, documented password. Set SEED_ADMIN_PASSWORD
+  // to choose one explicitly (e.g. for local dev); otherwise a random
+  // password is generated and printed once here, and only here — it is
+  // never written to a file or committed anywhere.
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || crypto.randomBytes(18).toString('base64url');
+  if (!process.env.SEED_ADMIN_PASSWORD) {
+    console.log(`🔑 Generated admin password (save this now, it will not be shown again): ${adminPassword}`);
+  }
+  const adminHash = await bcrypt.hash(adminPassword, 12);
   const admin = await prisma.user.upsert({
     where: { email: 'admin@misschilihotsauce.com' },
     update: {},

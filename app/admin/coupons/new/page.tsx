@@ -23,7 +23,7 @@ export default function NewCouponPage() {
 
         <div>
           <label className="block text-(--text-sm) font-medium mb-1">Discount Type</label>
-          <select name="type" defaultValue="PERCENTAGE" className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)">
+          <select name="type" defaultValue="PERCENTAGE" className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)">
             <option value="PERCENTAGE">Percentage</option>
             <option value="FIXED">Fixed Amount</option>
           </select>

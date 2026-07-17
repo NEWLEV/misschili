@@ -4,7 +4,16 @@ import { signIn } from 'next-auth/react';
 import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import Link from 'next/link';
+import { Input } from '@/components/ui/Input';
+
+// Only ever navigate to a same-origin, relative path after login — an
+// unvalidated callbackUrl query param would otherwise let an attacker craft
+// a login link that redirects a signed-in victim to an external site.
+function safeCallbackUrl(raw: string | null): string {
+  if (!raw) return '/account';
+  if (raw.startsWith('/') && !raw.startsWith('//') && !raw.startsWith('/\\')) return raw;
+  return '/account';
+}
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -12,7 +21,7 @@ function LoginForm() {
   const [error, setError] = useState('');
   const searchParams = useSearchParams();
   const router = useRouter();
-  const callbackUrl = searchParams.get('callbackUrl') || '/account';
+  const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,36 +48,34 @@ function LoginForm() {
         <h1 className="text-(--text-3xl) font-bold mb-(--space-6) text-center" style={{ fontFamily: 'var(--font-display)' }}>
           Welcome Back
         </h1>
-        
+
         {error && (
-          <div className="bg-(--color-danger)/10 text-(--color-danger) p-3 rounded-(--radius-md) mb-(--space-4) text-(--text-sm) text-center">
+          <div role="alert" className="bg-(--color-danger)/10 text-(--color-danger) p-3 rounded-md mb-(--space-4) text-(--text-sm) text-center">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-(--space-4)">
-          <div>
-            <label className="block text-(--text-sm) font-medium mb-1">Email</label>
-            <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full h-12 px-4 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border) focus:border-(--color-primary) outline-none transition-colors" 
-              placeholder="you@example.com"
-            />
-          </div>
-          <div>
-            <label className="block text-(--text-sm) font-medium mb-1">Password</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full h-12 px-4 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border) focus:border-(--color-primary) outline-none transition-colors" 
-              placeholder="••••••••"
-            />
-          </div>
+          <Input
+            id="login-email"
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            placeholder="you@example.com"
+          />
+          <Input
+            id="login-password"
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+            placeholder="••••••••"
+          />
           <Button type="submit" variant="primary" className="w-full h-12 text-(--text-base)">
             Sign In
           </Button>
@@ -94,4 +101,3 @@ export default function LoginPage() {
     </Suspense>
   );
 }
-

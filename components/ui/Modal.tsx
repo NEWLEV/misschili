@@ -61,7 +61,7 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
       <div className="flex items-center justify-center min-h-full p-(--space-4)">
         <div
           className={cn(
-            'w-full bg-(--color-surface) text-(--color-text) rounded-(--radius-xl)',
+            'w-full bg-(--color-surface) text-(--color-text) rounded-xl',
             'border border-(--color-border)',
             'shadow-(--shadow-xl)',
             'animate-slide-up',
@@ -76,7 +76,7 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
               <h3 className="text-(--text-xl) font-semibold text-(--color-text)">{title}</h3>
               <button
                 onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center rounded-(--radius-md) hover:bg-(--color-surface-hover) text-(--color-text-muted) hover:text-(--color-text) transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-(--color-surface-hover) text-(--color-text-muted) hover:text-(--color-text) transition-colors"
                 aria-label="Close modal"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

@@ -2,8 +2,10 @@ import { prisma } from '@/lib/prisma';
 import { formatPrice } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { updateOrderStatus } from './actions';
+import { updateOrderStatus, refundOrder } from './actions';
 import { Button } from '@/components/ui/Button';
+import { ConfirmSubmitButton } from '@/components/admin/ConfirmSubmitButton';
+import type { OrderStatus } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,23 +82,64 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
             <h2 className="text-(--text-lg) font-semibold mb-(--space-4)">Manage Order</h2>
             <form action={async (formData) => {
               'use server';
-              await updateOrderStatus(order.id, formData.get('status') as any, formData.get('adminNotes') as string);
+              await updateOrderStatus(
+                order.id,
+                formData.get('status') as OrderStatus,
+                formData.get('adminNotes') as string,
+                formData.get('trackingNumber') as string,
+                formData.get('trackingUrl') as string
+              );
             }} className="space-y-(--space-4)">
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Status</label>
-                <select name="status" defaultValue={order.status} className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)">
-                  {['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'].map(s => (
+                <select name="status" defaultValue={order.status} className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)">
+                  {['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'].map(s => (
                     <option key={s} value={s}>{s}</option>
                   ))}
+                  {order.status === 'REFUNDED' && <option value="REFUNDED">REFUNDED</option>}
                 </select>
+                <p className="text-(--text-xs) text-(--color-text-muted) mt-1">Refunds are issued separately below — they move real money through Stripe.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-(--space-4)">
+                <div>
+                  <label className="block text-(--text-sm) font-medium mb-1">Tracking Number</label>
+                  <input name="trackingNumber" defaultValue={order.trackingNumber || ''} className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)" />
+                </div>
+                <div>
+                  <label className="block text-(--text-sm) font-medium mb-1">Tracking URL</label>
+                  <input name="trackingUrl" type="url" defaultValue={order.trackingUrl || ''} placeholder="https://…" className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)" />
+                </div>
               </div>
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Admin Notes (Internal)</label>
-                <textarea name="adminNotes" defaultValue={order.adminNotes || ''} rows={3} className="w-full p-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)"></textarea>
+                <textarea name="adminNotes" defaultValue={order.adminNotes || ''} rows={3} className="w-full p-3 rounded-md bg-(--color-bg) border border-(--color-border)"></textarea>
               </div>
               <Button type="submit" variant="primary">Save Changes</Button>
             </form>
           </div>
+
+          {/* Refund */}
+          {order.payment && order.payment.status === 'SUCCEEDED' && (
+            <div className="card p-(--space-6)">
+              <h2 className="text-(--text-lg) font-semibold mb-(--space-2)">Refund</h2>
+              <p className="text-(--text-sm) text-(--color-text-secondary) mb-(--space-4)">
+                Issues a real refund through Stripe for the full amount ({formatPrice(Number(order.total))}) and marks the order Refunded once confirmed.
+              </p>
+              <ConfirmSubmitButton
+                action={async () => await refundOrder(order.id)}
+                confirmMessage={`Refund ${formatPrice(Number(order.total))} to the customer via Stripe? This cannot be undone.`}
+                variant="danger"
+              >
+                Issue Refund
+              </ConfirmSubmitButton>
+            </div>
+          )}
+          {order.payment?.status === 'REFUNDED' && (
+            <div className="card p-(--space-6)">
+              <h2 className="text-(--text-lg) font-semibold mb-(--space-2)">Refund</h2>
+              <p className="text-(--text-sm) text-(--color-success)">This order has been refunded.</p>
+            </div>
+          )}
         </div>
 
         {/* Sidebar Info */}

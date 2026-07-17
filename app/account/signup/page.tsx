@@ -59,7 +59,7 @@ export default function SignupPage() {
         </h1>
 
         {error && (
-          <div className="bg-(--color-danger)/10 text-(--color-danger) p-3 rounded-(--radius-md) mb-(--space-4) text-(--text-sm) text-center">
+          <div role="alert" className="bg-(--color-danger)/10 text-(--color-danger) p-3 rounded-md mb-(--space-4) text-(--text-sm) text-center">
             {error}
           </div>
         )}

@@ -1,16 +1,12 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { ADMIN_ROLES } from '@/lib/admin-auth';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  const adminRoles = [
-    'SUPER_ADMIN', 'STORE_MANAGER', 'INVENTORY_MANAGER', 
-    'FULFILLMENT', 'SUPPORT', 'MARKETING', 'EDITOR', 
-    'ACCOUNTANT', 'DEVELOPER', 'AUDITOR'
-  ];
 
-  if (!session || !session.user || !adminRoles.includes(session.user.role as string)) {
+  if (!session || !session.user || !ADMIN_ROLES.includes(session.user.role)) {
     redirect('/api/auth/signin?callbackUrl=/admin/dashboard');
   }
 

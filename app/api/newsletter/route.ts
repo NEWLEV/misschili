@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { newsletterSchema } from '@/lib/validations';
 import { apiSuccess, apiError } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(apiSuccess({ id: subscriber.id }), { status: 201 });
   } catch (error) {
-    console.error('[Newsletter] Subscription error:', error);
+    logger.error({ err: error }, '[Newsletter] Subscription error');
     return NextResponse.json(apiError('Failed to subscribe. Please try again.'), { status: 500 });
   }
 }

@@ -2,12 +2,58 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import { useCart } from './CartProvider';
 import { Button } from '@/components/ui/Button';
 import { formatPrice } from '@/lib/utils';
 
+const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export function CartDrawer() {
   const { items, itemCount, subtotal, updateQuantity, removeItem, clearCart, isOpen, closeCart } = useCart();
+  const drawerRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
+
+  // Focus trap + Escape-to-close + focus restore — the drawer previously had
+  // none of this despite role="dialog", so keyboard/screen-reader users could
+  // tab straight through to page content behind it and Escape did nothing.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    previouslyFocused.current = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeCart();
+        return;
+      }
+      if (e.key !== 'Tab' || !drawerRef.current) return;
+
+      const focusable = Array.from(drawerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+      previouslyFocused.current?.focus();
+    };
+  }, [isOpen, closeCart]);
 
   if (!isOpen) return null;
 
@@ -22,6 +68,7 @@ export function CartDrawer() {
 
       {/* Drawer */}
       <aside
+        ref={drawerRef}
         className="fixed top-0 right-0 z-(--z-modal) h-full w-full max-w-md bg-(--color-surface) border-l border-(--color-border) shadow-(--shadow-xl) flex flex-col"
         role="dialog"
         aria-modal="true"
@@ -33,8 +80,9 @@ export function CartDrawer() {
             Your Cart ({itemCount})
           </h2>
           <button
+            ref={closeButtonRef}
             onClick={closeCart}
-            className="w-8 h-8 flex items-center justify-center rounded-(--radius-md) hover:bg-(--color-surface-hover) text-(--color-text-muted) hover:text-(--color-text) transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-(--color-surface-hover) text-(--color-text-muted) hover:text-(--color-text) transition-colors"
             aria-label="Close cart"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -68,9 +116,9 @@ export function CartDrawer() {
                 return (
                   <li
                     key={item.id}
-                    className="flex gap-(--space-4) p-(--space-3) rounded-(--radius-lg) bg-(--color-bg) border border-(--color-border)"
+                    className="flex gap-(--space-4) p-(--space-3) rounded-lg bg-(--color-bg) border border-(--color-border)"
                   >
-                    <div className="w-20 h-20 rounded-(--radius-md) overflow-hidden shrink-0 bg-(--color-surface-hover)">
+                    <div className="w-20 h-20 rounded-md overflow-hidden shrink-0 bg-(--color-surface-hover)">
                       <Image
                         src={item.imageUrl || '/images/logos/MissChili_Logos_MissChili.png'}
                         alt={item.name}
@@ -92,7 +140,7 @@ export function CartDrawer() {
                       </p>
                       <div className="flex items-center justify-between mt-(--space-2)">
                         {/* Quantity Stepper */}
-                        <div className="flex items-center border border-(--color-border) rounded-(--radius-md) overflow-hidden">
+                        <div className="flex items-center border border-(--color-border) rounded-md overflow-hidden">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             className="w-8 h-8 flex items-center justify-center hover:bg-(--color-surface-hover) text-(--color-text-secondary) transition-colors"

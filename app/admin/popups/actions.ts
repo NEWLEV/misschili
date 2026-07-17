@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { popupSchema } from '@/lib/validations';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { requireAdminRole, ROLE_GROUPS } from '@/lib/admin-auth';
+import { writeAuditLog } from '@/lib/audit-log';
 
 function parsePopupForm(formData: FormData) {
   return popupSchema.safeParse({
@@ -23,6 +25,8 @@ function parsePopupForm(formData: FormData) {
 }
 
 export async function createPopup(formData: FormData) {
+  const session = await requireAdminRole(ROLE_GROUPS.CONTENT_WRITE);
+
   const parsed = parsePopupForm(formData);
   if (!parsed.success) {
     throw new Error(parsed.error.issues[0].message);
@@ -41,11 +45,15 @@ export async function createPopup(formData: FormData) {
     return created;
   });
 
+  await writeAuditLog({ session, action: 'popup.created', targetType: 'Popup', targetId: popup.id, after: { title: popup.title, type: popup.type, isActive: popup.isActive } });
+
   revalidatePath('/admin/popups');
   redirect(`/admin/popups/${popup.id}`);
 }
 
 export async function updatePopup(popupId: string, formData: FormData) {
+  const session = await requireAdminRole(ROLE_GROUPS.CONTENT_WRITE);
+
   const parsed = parsePopupForm(formData);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
@@ -64,12 +72,16 @@ export async function updatePopup(popupId: string, formData: FormData) {
     }
   });
 
+  await writeAuditLog({ session, action: 'popup.updated', targetType: 'Popup', targetId: popupId, after: { title: parsed.data.title, isActive: parsed.data.isActive } });
+
   revalidatePath(`/admin/popups/${popupId}`);
   revalidatePath('/admin/popups');
   return { success: true };
 }
 
 export async function togglePopupActive(popupId: string, isActive: boolean) {
+  const session = await requireAdminRole(ROLE_GROUPS.CONTENT_WRITE);
+
   await prisma.$transaction(async (tx) => {
     await tx.popup.update({ where: { id: popupId }, data: { isActive } });
     if (isActive) {
@@ -79,6 +91,8 @@ export async function togglePopupActive(popupId: string, isActive: boolean) {
       });
     }
   });
+
+  await writeAuditLog({ session, action: 'popup.toggled', targetType: 'Popup', targetId: popupId, after: { isActive } });
 
   revalidatePath('/admin/popups');
 }

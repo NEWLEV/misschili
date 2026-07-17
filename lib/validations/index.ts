@@ -16,9 +16,9 @@ export const productSchema = z.object({
   metaTitle: z.string().max(60).optional(),
   metaDesc: z.string().max(160).optional(),
   weight: z.coerce.number().positive().nullable().optional(),
-  ingredients: z.string().optional(),
+  ingredients: z.string().nullable().optional(),
   heatLevel: z.coerce.number().int().min(1).max(10).nullable().optional(),
-  volume: z.string().optional(),
+  volume: z.string().nullable().optional(),
   categoryIds: z.array(z.string()).optional(),
 });
 

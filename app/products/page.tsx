@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { Button } from '@/components/ui/Button';
 import { ProductGrid } from '@/components/storefront/ProductGrid';
 import { getProducts } from '@/lib/products';
@@ -7,6 +8,26 @@ const CATEGORY_NAMES: Record<string, string> = {
   'fiery-heat': 'Fiery Heat',
   'spicy-hot': 'Spicy Hot',
 };
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}): Promise<Metadata> {
+  const { category } = await searchParams;
+  const categoryName = category ? CATEGORY_NAMES[category] : null;
+
+  return {
+    title: categoryName ? `${categoryName} Sauces` : 'Shop All Hot Sauces',
+    description: categoryName
+      ? `Shop our ${categoryName.toLowerCase()} hot sauces — handcrafted in Miami with real ghost pepper heat.`
+      : 'Shop the full lineup of Miss Chili hot sauces, handcrafted in Miami with real ghost pepper heat.',
+    // Category filters are the same underlying page with different query
+    // params — without a canonical pointing everything back to /products,
+    // search engines can treat each ?category= variant as duplicate content.
+    alternates: { canonical: category ? `/products?category=${category}` : '/products' },
+  };
+}
 
 export default async function ProductsPage({
   searchParams,

@@ -29,7 +29,7 @@ export function NewsletterSignup() {
 
   if (newsletterStatus === 'success') {
     return (
-      <div className="p-(--space-4) rounded-(--radius-lg) bg-[oklch(from_var(--color-success)_l_c_h_/_0.1)] border border-[oklch(from_var(--color-success)_l_c_h_/_0.2)]">
+      <div className="p-(--space-4) rounded-lg bg-[oklch(from_var(--color-success)_l_c_h_/_0.1)] border border-[oklch(from_var(--color-success)_l_c_h_/_0.2)]">
         <p className="text-(--color-success) font-medium">🌶️ You&apos;re in! Watch your inbox for some heat.</p>
       </div>
     );
@@ -44,7 +44,7 @@ export function NewsletterSignup() {
           onChange={(e) => setNewsletterEmail(e.target.value)}
           placeholder="your@email.com"
           required
-          className="flex-1 h-12 px-(--space-4) rounded-(--radius-md) bg-(--color-bg) border border-(--color-border) text-(--color-text) placeholder:text-(--color-text-muted) focus:outline-none focus:border-(--color-primary) transition-colors"
+          className="flex-1 h-12 px-(--space-4) rounded-md bg-(--color-bg) border border-(--color-border) text-(--color-text) placeholder:text-(--color-text-muted) focus:outline-none focus:border-(--color-primary) transition-colors"
         />
         <Button
           variant="primary"

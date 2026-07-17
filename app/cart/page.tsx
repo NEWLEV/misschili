@@ -27,14 +27,14 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-(--space-4)">
             {items.map((item) => (
               <div key={item.id} className="card p-(--space-5) flex gap-(--space-5)">
-                <div className="w-24 h-24 rounded-(--radius-md) bg-(--color-bg-alt) flex items-center justify-center shrink-0">
+                <div className="w-24 h-24 rounded-md bg-(--color-bg-alt) flex items-center justify-center shrink-0">
                   <Image src={item.imageUrl || '/images/logos/MissChili_Logos_MissChili.png'} alt={item.name} width={60} height={82} className="h-[70px] w-auto object-contain" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link href={`/products/${item.slug}`} className="text-(--text-base) font-semibold hover:text-(--color-primary) transition-colors">{item.name}</Link>
                   <p className="text-(--text-sm) text-(--color-text-muted) mt-1">{formatPrice(item.salePrice ?? item.price)} each</p>
                   <div className="flex items-center justify-between mt-(--space-3)">
-                    <div className="flex items-center border border-(--color-border) rounded-(--radius-md)">
+                    <div className="flex items-center border border-(--color-border) rounded-md">
                       <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-9 h-9 flex items-center justify-center hover:bg-(--color-surface-hover)">−</button>
                       <span className="w-10 h-9 flex items-center justify-center text-(--text-sm) tabular-nums border-x border-(--color-border)">{item.quantity}</span>
                       <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-9 h-9 flex items-center justify-center hover:bg-(--color-surface-hover)">+</button>

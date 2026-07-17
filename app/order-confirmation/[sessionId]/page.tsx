@@ -2,8 +2,13 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { stripe } from '@/lib/stripe';
 
 export const dynamic = 'force-dynamic';
+
+function minutesSince(unixSeconds: number): number {
+  return (Date.now() / 1000 - unixSeconds) / 60;
+}
 
 export default async function OrderConfirmationPage({
   params,
@@ -19,8 +24,41 @@ export default async function OrderConfirmationPage({
 
   // Stripe redirects here immediately after payment, but the order is only
   // created once our webhook processes the event asynchronously — it may
-  // not exist yet. Show a reassuring message instead of a 404.
+  // not exist yet. Ask Stripe directly (source of truth) rather than
+  // assuming success indefinitely if the webhook never lands.
   if (!order) {
+    let paymentConfirmed = false;
+    let sessionCreatedAt: number | null = null;
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      paymentConfirmed = session.payment_status === 'paid';
+      sessionCreatedAt = session.created;
+    } catch {
+      // Unknown/invalid session ID — fall through to the generic message
+      // below rather than exposing Stripe error details to the customer.
+    }
+
+    if (!paymentConfirmed) {
+      return (
+        <div className="section-container section-padding text-center max-w-lg mx-auto">
+          <h1 className="text-(--text-3xl) font-bold mb-(--space-4)" style={{ fontFamily: 'var(--font-display)' }}>
+            We Couldn&apos;t Confirm This Payment
+          </h1>
+          <p className="text-(--color-text-secondary) mb-(--space-6)">
+            This order wasn&apos;t completed, or the payment link has expired. If you were
+            charged and don&apos;t see a confirmation email shortly, contact us at{' '}
+            <a href={`mailto:${process.env.ADMIN_EMAIL || 'misschilihotsauce@gmail.com'}`} className="underline">
+              {process.env.ADMIN_EMAIL || 'misschilihotsauce@gmail.com'}
+            </a>{' '}
+            and we&apos;ll sort it out.
+          </p>
+          <Link href="/cart"><Button variant="primary">Return to Cart</Button></Link>
+        </div>
+      );
+    }
+
+    const minutesSincePayment = sessionCreatedAt ? minutesSince(sessionCreatedAt) : 0;
+
     return (
       <div className="section-container section-padding text-center max-w-lg mx-auto">
         <h1 className="text-(--text-3xl) font-bold mb-(--space-4)" style={{ fontFamily: 'var(--font-display)' }}>
@@ -30,6 +68,15 @@ export default async function OrderConfirmationPage({
           Your payment was successful and your order is being processed. A confirmation
           email with your order details is on its way — it may take a minute to arrive.
         </p>
+        {minutesSincePayment > 5 && (
+          <p className="text-(--text-sm) text-(--color-text-muted) mb-(--space-6)">
+            Still not seeing it after a few minutes? Email{' '}
+            <a href={`mailto:${process.env.ADMIN_EMAIL || 'misschilihotsauce@gmail.com'}`} className="underline">
+              {process.env.ADMIN_EMAIL || 'misschilihotsauce@gmail.com'}
+            </a>{' '}
+            with this reference: <span className="font-mono">{sessionId}</span>
+          </p>
+        )}
         <Link href="/products"><Button variant="primary">Keep Shopping</Button></Link>
       </div>
     );

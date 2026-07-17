@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Terms of Service' };
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description: 'The terms and conditions for using the Miss Chili Hot Sauce website and placing orders.',
+  alternates: { canonical: '/terms' },
+};
 
 export default function TermsPage() {
   return (

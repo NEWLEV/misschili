@@ -6,9 +6,9 @@ Production-ready e-commerce storefront and admin dashboard for [www.misschilipep
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 14+ (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Styling | Tailwind CSS v4 + CSS Custom Properties |
-| Database | PostgreSQL via Prisma ORM |
+| Database | MariaDB via Prisma ORM |
 | Auth | NextAuth.js v5 (Auth.js) |
 | Payments | Stripe Checkout |
 | Email | Nodemailer (Hostinger SMTP) |
@@ -32,14 +32,17 @@ cp .env.example .env
 ### 3. Start Database
 ```bash
 docker compose up -d
-# OR use your own PostgreSQL instance
+# OR use your own MariaDB/MySQL instance
 ```
 
 ### 4. Run Migrations & Seed
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate dev
 npx prisma db seed
 ```
+
+In production, run `npx prisma migrate deploy` instead — it applies the committed
+migrations in `prisma/migrations/` without generating new ones.
 
 ### 5. Start Dev Server
 ```bash
@@ -50,9 +53,10 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ## First Login
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@misschilihotsauce.com | MissChili2024! |
+Seeding creates one `SUPER_ADMIN` account at `admin@misschilihotsauce.com`. Its password is
+**not** fixed or committed anywhere — `npx prisma db seed` generates a random one and prints it
+to the console exactly once. Set `SEED_ADMIN_PASSWORD` in your environment before seeding if you
+want to choose it yourself (local dev only; never commit a real password to `.env`).
 
 ## Project Structure
 

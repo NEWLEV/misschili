@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProducts } from '@/lib/products';
 import { apiSuccess, apiError } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(apiSuccess(result));
   } catch (error) {
-    console.error('[Products] Fetch error:', error);
+    logger.error({ err: error }, '[Products] Fetch error');
     return NextResponse.json(apiError('Failed to fetch products'), { status: 500 });
   }
 }

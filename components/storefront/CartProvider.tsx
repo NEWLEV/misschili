@@ -55,6 +55,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    // Deliberately setState-in-effect: the cart is persisted to localStorage,
+    // which isn't available during SSR — the server always renders an empty
+    // cart, and the real contents must be loaded post-mount. There's no
+    // pure-render alternative that avoids a hydration mismatch here.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(loadCart());
     setIsHydrated(true);
   }, []);

@@ -40,7 +40,7 @@ export default async function EditPopupPage({
       }} className="card p-(--space-6) space-y-(--space-4)">
         <div>
           <label className="block text-(--text-sm) font-medium mb-1">Type</label>
-          <select name="type" defaultValue={popup.type} className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)">
+          <select name="type" defaultValue={popup.type} className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)">
             <option value="NEWSLETTER">Newsletter</option>
             <option value="EXIT_INTENT">Exit Intent</option>
             <option value="PROMOTION">Promotion</option>
@@ -53,7 +53,7 @@ export default async function EditPopupPage({
 
         <div>
           <label className="block text-(--text-sm) font-medium mb-1">Message</label>
-          <textarea name="message" required rows={3} defaultValue={popup.message} className="w-full p-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)"></textarea>
+          <textarea name="message" required rows={3} defaultValue={popup.message} className="w-full p-3 rounded-md bg-(--color-bg) border border-(--color-border)"></textarea>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -65,7 +65,7 @@ export default async function EditPopupPage({
 
         <div>
           <label className="block text-(--text-sm) font-medium mb-1">Frequency</label>
-          <select name="frequency" defaultValue={popup.frequency} className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)">
+          <select name="frequency" defaultValue={popup.frequency} className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)">
             <option value="ONCE">Once</option>
             <option value="SESSION">Once per session</option>
             <option value="DAILY">Once per day</option>

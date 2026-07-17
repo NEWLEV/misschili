@@ -40,7 +40,7 @@ export function ProductDetailClient({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-(--space-12)">
         {/* Image Gallery */}
         <div>
-          <div className="aspect-square bg-(--color-surface) rounded-(--radius-xl) flex items-center justify-center p-(--space-8) mb-(--space-4) overflow-hidden">
+          <div className="aspect-square bg-(--color-surface) rounded-xl flex items-center justify-center p-(--space-8) mb-(--space-4) overflow-hidden">
             <Image
               src={activeImage}
               alt={product.name}
@@ -56,7 +56,9 @@ export function ProductDetailClient({
                 <button
                   key={src}
                   onClick={() => setActiveImageIndex(i)}
-                  className={`w-20 h-20 rounded-(--radius-md) overflow-hidden border-2 transition-colors flex items-center justify-center bg-(--color-surface) ${activeImageIndex === i ? 'border-(--color-primary)' : 'border-(--color-border)'}`}
+                  aria-label={`Show ${product.name} image ${i + 1}`}
+                  aria-pressed={activeImageIndex === i}
+                  className={`w-20 h-20 rounded-md overflow-hidden border-2 transition-colors flex items-center justify-center bg-(--color-surface) ${activeImageIndex === i ? 'border-(--color-primary)' : 'border-(--color-border)'}`}
                 >
                   <Image src={src} alt="" width={60} height={82} className="object-contain p-1" />
                 </button>
@@ -100,7 +102,7 @@ export function ProductDetailClient({
 
           {/* Quantity + Add to Cart */}
           <div className="flex items-center gap-(--space-4) mb-(--space-6)">
-            <div className="flex items-center border border-(--color-border) rounded-(--radius-md)">
+            <div className="flex items-center border border-(--color-border) rounded-md">
               <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-11 h-11 flex items-center justify-center hover:bg-(--color-surface-hover) transition-colors text-lg">−</button>
               <input type="number" min="1" max={product.maxQuantity} value={quantity} onChange={(e) => setQuantity(Math.max(1, Math.min(product.maxQuantity, parseInt(e.target.value) || 1)))}
                 className="w-14 h-11 text-center bg-transparent border-x border-(--color-border) tabular-nums" />

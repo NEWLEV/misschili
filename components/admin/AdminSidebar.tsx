@@ -15,6 +15,7 @@ const SIDEBAR_ITEMS = [
   { href: '/admin/popups', label: 'Popups', icon: '💬' },
   { href: '/admin/content', label: 'Content', icon: '📝' },
   { href: '/admin/subscribers', label: 'Subscribers', icon: '📧' },
+  { href: '/admin/audit-log', label: 'Audit Log', icon: '🧾' },
   { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
 ];
 
@@ -44,7 +45,7 @@ export function AdminSidebar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-(--space-3) px-(--space-3) py-(--space-2) rounded-(--radius-md) text-(--text-sm) font-medium transition-colors ${isActive ? 'bg-[oklch(from_var(--color-primary)_l_c_h_/_0.12)] text-(--color-primary)' : 'text-(--color-text-secondary) hover:bg-(--color-surface-hover) hover:text-(--color-text)'}`}
+                  className={`flex items-center gap-(--space-3) px-(--space-3) py-(--space-2) rounded-md text-(--text-sm) font-medium transition-colors ${isActive ? 'bg-[oklch(from_var(--color-primary)_l_c_h_/_0.12)] text-(--color-primary)' : 'text-(--color-text-secondary) hover:bg-(--color-surface-hover) hover:text-(--color-text)'}`}
                 >
                   <span>{item.icon}</span>
                   <span>{item.label}</span>
@@ -57,14 +58,14 @@ export function AdminSidebar() {
 
       {/* Footer */}
       <div className="p-(--space-3) border-t border-(--color-border) space-y-(--space-2)">
-        <button onClick={toggleTheme} className="w-full flex items-center gap-(--space-3) px-(--space-3) py-(--space-2) rounded-(--radius-md) text-(--text-sm) text-(--color-text-secondary) hover:bg-(--color-surface-hover) transition-colors">
+        <button onClick={toggleTheme} className="w-full flex items-center gap-(--space-3) px-(--space-3) py-(--space-2) rounded-md text-(--text-sm) text-(--color-text-secondary) hover:bg-(--color-surface-hover) transition-colors">
           <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
           <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
         </button>
-        <Link href="/" className="w-full flex items-center gap-(--space-3) px-(--space-3) py-(--space-2) rounded-(--radius-md) text-(--text-sm) text-(--color-text-secondary) hover:bg-(--color-surface-hover) transition-colors">
+        <Link href="/" className="w-full flex items-center gap-(--space-3) px-(--space-3) py-(--space-2) rounded-md text-(--text-sm) text-(--color-text-secondary) hover:bg-(--color-surface-hover) transition-colors">
           <span>🌐</span><span>View Store</span>
         </Link>
-        <button onClick={() => signOut({ callbackUrl: '/admin/login' })} className="w-full flex items-center gap-(--space-3) px-(--space-3) py-(--space-2) rounded-(--radius-md) text-(--text-sm) text-(--color-danger) hover:bg-(--color-surface-hover) transition-colors">
+        <button onClick={() => signOut({ callbackUrl: '/admin/login' })} className="w-full flex items-center gap-(--space-3) px-(--space-3) py-(--space-2) rounded-md text-(--text-sm) text-(--color-danger) hover:bg-(--color-surface-hover) transition-colors">
           <span>🚪</span><span>Sign Out</span>
         </button>
       </div>

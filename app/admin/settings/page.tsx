@@ -20,6 +20,7 @@ export default async function AdminSettingsPage() {
         await updateSiteSettings('/admin/settings', formData);
       }} className="card p-(--space-6) space-y-(--space-4)">
         <Input label="Free Shipping Threshold ($)" name="free_shipping_threshold" type="number" min="0" step="0.01" defaultValue={get('free_shipping_threshold', '50')} />
+        <Input label="Flat Shipping Rate ($, below threshold)" name="flat_shipping_rate" type="number" min="0" step="0.01" defaultValue={get('flat_shipping_rate', '7.99')} />
         <Input label="Tax Rate (e.g. 0.07 for 7%)" name="tax_rate" type="number" min="0" step="0.001" defaultValue={get('tax_rate', '0.07')} />
         <Input label="Currency" name="currency" defaultValue={get('currency', 'USD')} />
 

@@ -64,7 +64,7 @@ function ResetPasswordForm() {
   return (
     <>
       {error && (
-        <div className="bg-(--color-danger)/10 text-(--color-danger) p-3 rounded-(--radius-md) mb-(--space-4) text-(--text-sm) text-center">
+        <div className="bg-(--color-danger)/10 text-(--color-danger) p-3 rounded-md mb-(--space-4) text-(--text-sm) text-center">
           {error}
         </div>
       )}

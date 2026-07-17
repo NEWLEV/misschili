@@ -11,7 +11,8 @@ interface CouponValidationResult {
 export async function validateCoupon(
   rawCode: string,
   subtotal: number,
-  userId?: string | null
+  userId?: string | null,
+  guestEmail?: string | null
 ): Promise<CouponValidationResult> {
   const code = rawCode.trim().toUpperCase();
   if (!code) return { valid: false, error: 'Please enter a coupon code' };
@@ -42,6 +43,17 @@ export async function validateCoupon(
     const usageCount = await prisma.couponUsage.count({ where: { userId, couponId: coupon.id } });
     if (usageCount >= coupon.maxUsesPerUser) {
       return { valid: false, error: 'You have already used this coupon' };
+    }
+  } else if (guestEmail) {
+    // Guests have no CouponUsage rows (that table requires a userId), so the
+    // per-user cap is enforced against completed guest orders for the same
+    // email instead — otherwise a "one per customer" code could be reused
+    // without limit by anyone checking out as a guest.
+    const usageCount = await prisma.order.count({
+      where: { userId: null, guestEmail: guestEmail.toLowerCase(), couponId: coupon.id },
+    });
+    if (usageCount >= coupon.maxUsesPerUser) {
+      return { valid: false, error: 'This coupon has already been used with this email address' };
     }
   }
 
