@@ -21,22 +21,22 @@ export default async function AccountOrdersPage() {
 
   return (
     <div className="section-container section-padding max-w-3xl mx-auto">
-      <h1 className="text-[var(--text-4xl)] font-bold mb-[var(--space-8)]" style={{ fontFamily: 'var(--font-display)' }}>
+      <h1 className="text-(--text-4xl) font-bold mb-(--space-8)" style={{ fontFamily: 'var(--font-display)' }}>
         My Orders
       </h1>
 
       {orders.length === 0 ? (
-        <div className="card p-[var(--space-8)] text-center">
-          <p className="text-[var(--color-text-secondary)]">You haven&apos;t placed any orders yet.</p>
+        <div className="card p-(--space-8) text-center">
+          <p className="text-(--color-text-secondary)">You haven&apos;t placed any orders yet.</p>
         </div>
       ) : (
-        <div className="space-y-[var(--space-4)]">
+        <div className="space-y-(--space-4)">
           {orders.map((order) => (
-            <div key={order.id} className="card p-[var(--space-6)]">
-              <div className="flex justify-between items-start mb-[var(--space-4)]">
+            <div key={order.id} className="card p-(--space-6)">
+              <div className="flex justify-between items-start mb-(--space-4)">
                 <div>
                   <p className="font-semibold">{order.orderNumber}</p>
-                  <p className="text-[var(--text-sm)] text-[var(--color-text-muted)]">
+                  <p className="text-(--text-sm) text-(--color-text-muted)">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
@@ -44,15 +44,15 @@ export default async function AccountOrdersPage() {
                   {order.status}
                 </span>
               </div>
-              <div className="divide-y divide-[var(--color-border)] mb-[var(--space-4)]">
+              <div className="divide-y divide-(--color-border) mb-(--space-4)">
                 {order.items.map((item) => (
-                  <div key={item.id} className="py-[var(--space-2)] flex justify-between text-[var(--text-sm)]">
+                  <div key={item.id} className="py-(--space-2) flex justify-between text-(--text-sm)">
                     <span>{item.productName} × {item.quantity}</span>
                     <span className="tabular-nums">{formatPrice(Number(item.totalPrice))}</span>
                   </div>
                 ))}
               </div>
-              <div className="flex justify-between pt-[var(--space-3)] border-t border-[var(--color-border)] font-semibold">
+              <div className="flex justify-between pt-(--space-3) border-t border-(--color-border) font-semibold">
                 <span>Total</span>
                 <span className="tabular-nums">{formatPrice(Number(order.total))}</span>
               </div>

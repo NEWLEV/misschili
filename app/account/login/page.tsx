@@ -35,46 +35,46 @@ function LoginForm() {
 
   return (
     <div className="section-container section-padding flex justify-center items-center min-h-[60vh]">
-      <div className="card p-[var(--space-8)] w-full max-w-md">
-        <h1 className="text-[var(--text-3xl)] font-bold mb-[var(--space-6)] text-center" style={{ fontFamily: 'var(--font-display)' }}>
+      <div className="card p-(--space-8) w-full max-w-md">
+        <h1 className="text-(--text-3xl) font-bold mb-(--space-6) text-center" style={{ fontFamily: 'var(--font-display)' }}>
           Welcome Back
         </h1>
         
         {error && (
-          <div className="bg-[var(--color-danger)]/10 text-[var(--color-danger)] p-3 rounded-[var(--radius-md)] mb-[var(--space-4)] text-[var(--text-sm)] text-center">
+          <div className="bg-(--color-danger)/10 text-(--color-danger) p-3 rounded-(--radius-md) mb-(--space-4) text-(--text-sm) text-center">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-[var(--space-4)]">
+        <form onSubmit={handleSubmit} className="space-y-(--space-4)">
           <div>
-            <label className="block text-[var(--text-sm)] font-medium mb-1">Email</label>
+            <label className="block text-(--text-sm) font-medium mb-1">Email</label>
             <input 
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-12 px-4 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)] focus:border-[var(--color-primary)] outline-none transition-colors" 
+              className="w-full h-12 px-4 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border) focus:border-(--color-primary) outline-none transition-colors" 
               placeholder="you@example.com"
             />
           </div>
           <div>
-            <label className="block text-[var(--text-sm)] font-medium mb-1">Password</label>
+            <label className="block text-(--text-sm) font-medium mb-1">Password</label>
             <input 
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full h-12 px-4 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)] focus:border-[var(--color-primary)] outline-none transition-colors" 
+              className="w-full h-12 px-4 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border) focus:border-(--color-primary) outline-none transition-colors" 
               placeholder="••••••••"
             />
           </div>
-          <Button type="submit" variant="primary" className="w-full h-12 text-[var(--text-base)]">
+          <Button type="submit" variant="primary" className="w-full h-12 text-(--text-base)">
             Sign In
           </Button>
         </form>
 
-        <div className="mt-[var(--space-6)] text-center text-[var(--text-sm)] text-[var(--color-text-muted)]">
+        <div className="mt-(--space-6) text-center text-(--text-sm) text-(--color-text-muted)">
           <p>Don&apos;t have an account?</p>
           <p className="mt-1">Accounts are created automatically upon your first purchase.</p>
         </div>
@@ -87,7 +87,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="section-container section-padding flex justify-center items-center min-h-[60vh]">
-        <div className="text-[var(--text-lg)]">Loading...</div>
+        <div className="text-(--text-lg)">Loading...</div>
       </div>
     }>
       <LoginForm />

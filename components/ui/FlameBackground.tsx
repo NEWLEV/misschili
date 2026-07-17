@@ -139,7 +139,7 @@ export function FlameBackground() {
         style={{ filter: 'blur(4px)' }}
       />
       {/* Dark overlay at the bottom so it fades into the next section */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)] via-transparent to-transparent z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-(--color-bg) via-transparent to-transparent z-10" />
       {/* Subtle vignette */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[rgba(10,0,0,0.4)] to-[rgba(10,0,0,0.8)] z-10" />
     </div>

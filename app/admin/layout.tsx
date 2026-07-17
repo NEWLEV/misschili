@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="flex h-screen overflow-hidden" style={{ background: 'var(--color-bg)' }}>
         <AdminSidebar />
         <div className="flex-1 overflow-y-auto">
-          <div className="p-[var(--space-6)]">{children}</div>
+          <div className="p-(--space-6)">{children}</div>
         </div>
       </div>
     </>

@@ -19,22 +19,22 @@ export default async function ProductsPage({
 
   return (
     <div className="section-container section-padding">
-      <nav className="mb-[var(--space-6)]" aria-label="Breadcrumb">
-        <ol className="flex items-center gap-[var(--space-2)] text-[var(--text-sm)] text-[var(--color-text-muted)]">
-          <li><Link href="/" className="hover:text-[var(--color-text)]">Home</Link></li>
+      <nav className="mb-(--space-6)" aria-label="Breadcrumb">
+        <ol className="flex items-center gap-(--space-2) text-(--text-sm) text-(--color-text-muted)">
+          <li><Link href="/" className="hover:text-(--color-text)">Home</Link></li>
           <li>/</li>
-          <li className="text-[var(--color-text)]">{categoryName}</li>
+          <li className="text-(--color-text)">{categoryName}</li>
         </ol>
       </nav>
 
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-[var(--space-4)] mb-[var(--space-8)]">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-(--space-4) mb-(--space-8)">
         <div>
-          <h1 className="text-[var(--text-4xl)] font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+          <h1 className="text-(--text-4xl) font-bold" style={{ fontFamily: 'var(--font-display)' }}>
             {categoryName}
           </h1>
-          <p className="text-[var(--color-text-secondary)] mt-1">Showing {products.length} product{products.length !== 1 ? 's' : ''}</p>
+          <p className="text-(--color-text-secondary) mt-1">Showing {products.length} product{products.length !== 1 ? 's' : ''}</p>
         </div>
-        <div className="flex gap-[var(--space-2)]">
+        <div className="flex gap-(--space-2)">
           <Link href="/products"><Button variant={!category ? 'primary' : 'outline'} size="sm">All</Button></Link>
           <Link href="/products?category=fiery-heat"><Button variant={category === 'fiery-heat' ? 'primary' : 'outline'} size="sm">🔥 Fiery Heat</Button></Link>
           <Link href="/products?category=spicy-hot"><Button variant={category === 'spicy-hot' ? 'primary' : 'outline'} size="sm">🌶️ Spicy Hot</Button></Link>

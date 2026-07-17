@@ -21,7 +21,7 @@ function HeatMeter({ level }: { level: number }) {
           }}
         />
       ))}
-      <span className="ml-2 text-[var(--text-xs)] font-semibold text-[var(--color-text-secondary)] tabular-nums">
+      <span className="ml-2 text-(--text-xs) font-semibold text-(--color-text-secondary) tabular-nums">
         {level}/10
       </span>
     </div>
@@ -32,14 +32,14 @@ export function FeaturedProductsSection({ products }: { products: FormattedProdu
   const { addItem } = useCart();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-8)] max-w-4xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-(--space-8) max-w-4xl mx-auto">
       {products.map((product, index) => (
         <article
           key={product.id}
           className="card overflow-hidden group"
           style={{ animationDelay: `${index * 150}ms` }}
         >
-          <div className="relative aspect-square bg-[var(--color-bg-alt)] flex items-center justify-center p-[var(--space-8)] overflow-hidden">
+          <div className="relative aspect-square bg-(--color-bg-alt) flex items-center justify-center p-(--space-8) overflow-hidden">
             <Image
               src={product.imageUrl}
               alt={product.name}
@@ -48,7 +48,7 @@ export function FeaturedProductsSection({ products }: { products: FormattedProdu
               className="h-[300px] w-auto object-contain group-hover:scale-110 transition-transform duration-500"
             />
             {product.heatLevel !== null && (
-              <div className="absolute top-[var(--space-4)] right-[var(--space-4)]">
+              <div className="absolute top-(--space-4) right-(--space-4)">
                 <span className="badge badge-primary">
                   🔥 Heat {product.heatLevel}/10
                 </span>
@@ -56,25 +56,25 @@ export function FeaturedProductsSection({ products }: { products: FormattedProdu
             )}
           </div>
 
-          <div className="p-[var(--space-6)]">
+          <div className="p-(--space-6)">
             <Link href={`/products/${product.slug}`}>
-              <h3 className="text-[var(--text-xl)] font-semibold mb-[var(--space-2)] hover:text-[var(--color-primary)] transition-colors" style={{ fontFamily: 'var(--font-display)' }}>
+              <h3 className="text-(--text-xl) font-semibold mb-(--space-2) hover:text-(--color-primary) transition-colors" style={{ fontFamily: 'var(--font-display)' }}>
                 {product.name}
               </h3>
             </Link>
-            <p className="text-[var(--text-sm)] text-[var(--color-text-secondary)] mb-[var(--space-3)] line-clamp-2">
+            <p className="text-(--text-sm) text-(--color-text-secondary) mb-(--space-3) line-clamp-2">
               {product.description}
             </p>
 
             {product.heatLevel !== null && <HeatMeter level={product.heatLevel} />}
 
-            <div className="flex items-center justify-between mt-[var(--space-4)] pt-[var(--space-4)] border-t border-[var(--color-border)]">
+            <div className="flex items-center justify-between mt-(--space-4) pt-(--space-4) border-t border-(--color-border)">
               <div>
-                <span className="text-[var(--text-2xl)] font-bold tabular-nums">
+                <span className="text-(--text-2xl) font-bold tabular-nums">
                   {formatPrice(product.salePrice ?? product.basePrice)}
                 </span>
                 {product.volume && (
-                  <span className="text-[var(--text-xs)] text-[var(--color-text-muted)] ml-[var(--space-2)]">
+                  <span className="text-(--text-xs) text-(--color-text-muted) ml-(--space-2)">
                     {product.volume}
                   </span>
                 )}

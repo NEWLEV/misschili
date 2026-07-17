@@ -12,44 +12,44 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = [
       'inline-flex items-center justify-center gap-2',
       'font-semibold whitespace-nowrap',
-      'rounded-[var(--radius-md)]',
-      'transition-all duration-[var(--duration-normal)]',
-      'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]',
+      'rounded-(--radius-md)',
+      'transition-all duration-(--duration-normal)',
+      'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-primary)',
       'disabled:opacity-50 disabled:cursor-not-allowed',
       'active:scale-[0.97]',
     ].join(' ');
 
     const variants: Record<string, string> = {
       primary: [
-        'bg-[var(--color-primary)] text-white font-bold',
-        'hover:bg-[var(--color-primary-hover)]',
-        'shadow-[var(--shadow-sm)]',
-        'hover:shadow-[var(--shadow-glow-primary)]',
+        'bg-(--color-primary) text-white font-bold',
+        'hover:bg-(--color-primary-hover)',
+        'shadow-(--shadow-sm)',
+        'hover:shadow-(--shadow-glow-primary)',
         'tracking-wide',
       ].join(' '),
       secondary: [
-        'bg-[var(--color-secondary)] text-[var(--color-secondary-text)]',
-        'hover:bg-[var(--color-secondary-hover)]',
+        'bg-(--color-secondary) text-(--color-secondary-text)',
+        'hover:bg-(--color-secondary-hover)',
       ].join(' '),
       outline: [
-        'border border-[var(--color-border-strong)] bg-transparent',
-        'text-[var(--color-text)]',
-        'hover:bg-[var(--color-surface-hover)]',
+        'border border-(--color-border-strong) bg-transparent',
+        'text-(--color-text)',
+        'hover:bg-(--color-surface-hover)',
       ].join(' '),
       ghost: [
-        'bg-transparent text-[var(--color-text-secondary)]',
-        'hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text)]',
+        'bg-transparent text-(--color-text-secondary)',
+        'hover:bg-(--color-surface-hover) hover:text-(--color-text)',
       ].join(' '),
       danger: [
-        'bg-[var(--color-danger)] text-white',
+        'bg-(--color-danger) text-white',
         'hover:opacity-90',
       ].join(' '),
     };
 
     const sizes: Record<string, string> = {
-      sm: 'h-9 px-3 text-[var(--text-sm)]',
-      md: 'h-11 px-5 text-[var(--text-base)]',
-      lg: 'h-13 px-7 text-[var(--text-lg)]',
+      sm: 'h-9 px-3 text-(--text-sm)',
+      md: 'h-11 px-5 text-(--text-base)',
+      lg: 'h-13 px-7 text-(--text-lg)',
     };
 
     return (

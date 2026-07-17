@@ -13,16 +13,16 @@ export function Header() {
 
   return (
     <header
-      className="sticky top-0 z-[var(--z-sticky)] backdrop-blur-xl"
+      className="sticky top-0 z-(--z-sticky) backdrop-blur-xl"
       style={{
         background: 'oklch(from var(--color-bg) l c h / 0.85)',
         borderBottom: '1px solid var(--color-border)',
       }}
     >
       <div className="section-container">
-        <div className="flex items-center justify-between h-[var(--header-height)]">
+        <div className="flex items-center justify-between h-(--header-height)">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-[var(--space-3)] shrink-0">
+          <Link href="/" className="flex items-center gap-(--space-3) shrink-0">
             <Image
               src="/images/logos/MissChili_Logos_MissChili.png"
               alt="Miss Chili Hot Sauce"
@@ -32,7 +32,7 @@ export function Header() {
               priority
             />
             <span
-              className="hidden sm:block font-[var(--font-display)] text-[var(--text-xl)] font-bold tracking-tight"
+              className="hidden sm:block font-(--font-display) text-(--text-xl) font-bold tracking-tight"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               Miss Chili
@@ -40,39 +40,39 @@ export function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-[var(--space-8)]" aria-label="Main navigation">
+          <nav className="hidden md:flex items-center gap-(--space-8)" aria-label="Main navigation">
             <Link
               href="/products"
-              className="text-[var(--text-sm)] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+              className="text-(--text-sm) font-medium text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
             >
               Shop
             </Link>
             <Link
               href="/products?category=fiery-heat"
-              className="text-[var(--text-sm)] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+              className="text-(--text-sm) font-medium text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
             >
               Fiery Heat
             </Link>
             <Link
               href="/products?category=spicy-hot"
-              className="text-[var(--text-sm)] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+              className="text-(--text-sm) font-medium text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
             >
               Spicy Hot
             </Link>
             <Link
               href="/#about"
-              className="text-[var(--text-sm)] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+              className="text-(--text-sm) font-medium text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
             >
               Our Story
             </Link>
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-[var(--space-2)]">
+          <div className="flex items-center gap-(--space-2)">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 flex items-center justify-center rounded-[var(--radius-md)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-(--radius-md) hover:bg-(--color-surface-hover) text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             >
               {theme === 'dark' ? (
@@ -90,7 +90,7 @@ export function Header() {
             {/* Account */}
             <Link
               href="/account"
-              className="w-10 h-10 flex items-center justify-center rounded-[var(--radius-md)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-(--radius-md) hover:bg-(--color-surface-hover) text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
               aria-label="Account"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -102,7 +102,7 @@ export function Header() {
             {/* Cart */}
             <button
               onClick={openCart}
-              className="relative w-10 h-10 flex items-center justify-center rounded-[var(--radius-md)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+              className="relative w-10 h-10 flex items-center justify-center rounded-(--radius-md) hover:bg-(--color-surface-hover) text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
               aria-label={`Cart (${itemCount} items)`}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -110,7 +110,7 @@ export function Header() {
                 <path d="M16 10a4 4 0 01-8 0" />
               </svg>
               {itemCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[var(--color-primary)] text-[var(--color-primary-text)] text-[11px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-(--color-primary) text-(--color-primary-text) text-[11px] font-bold rounded-full flex items-center justify-center">
                   {itemCount > 99 ? '99+' : itemCount}
                 </span>
               )}
@@ -119,7 +119,7 @@ export function Header() {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden w-10 h-10 flex items-center justify-center rounded-[var(--radius-md)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+              className="md:hidden w-10 h-10 flex items-center justify-center rounded-(--radius-md) hover:bg-(--color-surface-hover) text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileMenuOpen}
             >
@@ -139,10 +139,10 @@ export function Header() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <nav
-            className="md:hidden py-[var(--space-4)] border-t border-[var(--color-border)] animate-slide-up"
+            className="md:hidden py-(--space-4) border-t border-(--color-border) animate-slide-up"
             aria-label="Mobile navigation"
           >
-            <div className="flex flex-col gap-[var(--space-1)]">
+            <div className="flex flex-col gap-(--space-1)">
               {[
                 { href: '/products', label: 'Shop All' },
                 { href: '/products?category=fiery-heat', label: 'Fiery Heat' },
@@ -154,7 +154,7 @@ export function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="py-[var(--space-3)] px-[var(--space-4)] rounded-[var(--radius-md)] text-[var(--text-base)] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-hover)] transition-colors"
+                  className="py-(--space-3) px-(--space-4) rounded-(--radius-md) text-(--text-base) font-medium text-(--color-text-secondary) hover:text-(--color-text) hover:bg-(--color-surface-hover) transition-colors"
                 >
                   {link.label}
                 </Link>

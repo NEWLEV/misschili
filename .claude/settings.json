@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m ' *)",
+      "Bash(git config *)",
+      "PowerShell(node -e \"const b=require\\('bcryptjs'\\); console.log\\(b.hashSync\\('timing-equalization-dummy-password', 12\\)\\)\")",
+      "PowerShell(docker-compose up -d)",
+      "PowerShell(docker ps -a --format \"{{.Names}} {{.Image}} {{.Ports}} {{.Status}}\"; Get-NetTCPConnection -LocalPort 5432 -State Listen | Select-Object -First 3 OwningProcess | ForEach-Object { Get-Process -Id $_.OwningProcess | Select-Object Id,ProcessName })",
+      "PowerShell(docker compose -f docker-compose.yml -f \"C:\\\\Users\\\\ZBook\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ZBook-Documents-MC-MC-Information-miss-chili-peppers\\\\2fc1574c-af28-4489-a81f-b13a6b3305f5\\\\scratchpad\\\\compose.ports.yml\" up -d)",
+      "PowerShell(npx prisma db push 2>&1)",
+      "PowerShell(npx tsx prisma/seed.ts)",
+      "PowerShell($env:DATABASE_URL = 'postgresql://misschili:misschili_dev_2024@localhost:5433/misschili'; npx tsx prisma/seed.ts)",
+      "PowerShell($env:DATABASE_URL = 'postgresql://misschili:misschili_dev_2024@localhost:5433/misschili'; npx tsx \"C:\\\\Users\\\\ZBook\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ZBook-Documents-MC-MC-Information-miss-chili-peppers\\\\2fc1574c-af28-4489-a81f-b13a6b3305f5\\\\scratchpad\\\\create-customer.ts\")",
+      "PowerShell(Copy-Item \"C:\\\\Users\\\\ZBook\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ZBook-Documents-MC-MC-Information-miss-chili-peppers\\\\2fc1574c-af28-4489-a81f-b13a6b3305f5\\\\scratchpad\\\\create-customer.ts\" \".\\\\prisma\\\\__tmp-create-customer.ts\"; $env:DATABASE_URL = 'postgresql://misschili:misschili_dev_2024@localhost:5433/misschili'; npx tsx prisma/__tmp-create-customer.ts; Remove-Item \".\\\\prisma\\\\__tmp-create-customer.ts\" -Force)",
+      "PowerShell(npm run dev)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(break)"
+    ]
+  }
+}

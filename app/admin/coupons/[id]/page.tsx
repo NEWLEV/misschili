@@ -24,25 +24,25 @@ export default async function EditCouponPage({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="flex items-center gap-[var(--space-4)] mb-[var(--space-6)]">
-        <Link href="/admin/coupons" className="text-[var(--color-text-muted)] hover:text-[var(--color-text)]">
+      <div className="flex items-center gap-(--space-4) mb-(--space-6)">
+        <Link href="/admin/coupons" className="text-(--color-text-muted) hover:text-(--color-text)">
           ← Back to Coupons
         </Link>
       </div>
 
-      <h1 className="text-[var(--text-3xl)] font-bold mb-[var(--space-6)]" style={{ fontFamily: 'var(--font-display)' }}>
+      <h1 className="text-(--text-3xl) font-bold mb-(--space-6)" style={{ fontFamily: 'var(--font-display)' }}>
         Edit Coupon
       </h1>
 
       <form action={async (formData) => {
         'use server';
         await updateCoupon(coupon.id, formData);
-      }} className="card p-[var(--space-6)] space-y-[var(--space-4)]">
+      }} className="card p-(--space-6) space-y-(--space-4)">
         <Input label="Code" name="code" required defaultValue={coupon.code} className="uppercase" />
 
         <div>
-          <label className="block text-[var(--text-sm)] font-medium mb-1">Discount Type</label>
-          <select name="type" defaultValue={coupon.type} className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]">
+          <label className="block text-(--text-sm) font-medium mb-1">Discount Type</label>
+          <select name="type" defaultValue={coupon.type} className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)">
             <option value="PERCENTAGE">Percentage</option>
             <option value="FIXED">Fixed Amount</option>
           </select>
@@ -62,12 +62,12 @@ export default async function EditCouponPage({
           <Input label="Expires At (optional)" name="expiresAt" type="date" defaultValue={toDateInputValue(coupon.expiresAt)} />
         </div>
 
-        <label className="flex items-center gap-2 text-[var(--text-sm)]">
+        <label className="flex items-center gap-2 text-(--text-sm)">
           <input type="checkbox" name="isActive" defaultChecked={coupon.isActive} />
           Active
         </label>
 
-        <p className="text-[var(--text-sm)] text-[var(--color-text-muted)]">
+        <p className="text-(--text-sm) text-(--color-text-muted)">
           Used {coupon.usedCount} time{coupon.usedCount !== 1 ? 's' : ''} so far.
         </p>
 

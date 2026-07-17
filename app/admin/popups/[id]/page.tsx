@@ -24,23 +24,23 @@ export default async function EditPopupPage({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="flex items-center gap-[var(--space-4)] mb-[var(--space-6)]">
-        <Link href="/admin/popups" className="text-[var(--color-text-muted)] hover:text-[var(--color-text)]">
+      <div className="flex items-center gap-(--space-4) mb-(--space-6)">
+        <Link href="/admin/popups" className="text-(--color-text-muted) hover:text-(--color-text)">
           ← Back to Popups
         </Link>
       </div>
 
-      <h1 className="text-[var(--text-3xl)] font-bold mb-[var(--space-6)]" style={{ fontFamily: 'var(--font-display)' }}>
+      <h1 className="text-(--text-3xl) font-bold mb-(--space-6)" style={{ fontFamily: 'var(--font-display)' }}>
         Edit Popup
       </h1>
 
       <form action={async (formData) => {
         'use server';
         await updatePopup(popup.id, formData);
-      }} className="card p-[var(--space-6)] space-y-[var(--space-4)]">
+      }} className="card p-(--space-6) space-y-(--space-4)">
         <div>
-          <label className="block text-[var(--text-sm)] font-medium mb-1">Type</label>
-          <select name="type" defaultValue={popup.type} className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]">
+          <label className="block text-(--text-sm) font-medium mb-1">Type</label>
+          <select name="type" defaultValue={popup.type} className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)">
             <option value="NEWSLETTER">Newsletter</option>
             <option value="EXIT_INTENT">Exit Intent</option>
             <option value="PROMOTION">Promotion</option>
@@ -52,8 +52,8 @@ export default async function EditPopupPage({
         <Input label="Title" name="title" required defaultValue={popup.title} />
 
         <div>
-          <label className="block text-[var(--text-sm)] font-medium mb-1">Message</label>
-          <textarea name="message" required rows={3} defaultValue={popup.message} className="w-full p-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]"></textarea>
+          <label className="block text-(--text-sm) font-medium mb-1">Message</label>
+          <textarea name="message" required rows={3} defaultValue={popup.message} className="w-full p-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)"></textarea>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -64,8 +64,8 @@ export default async function EditPopupPage({
         <Input label="Discount Code (optional)" name="discountCode" className="uppercase" defaultValue={popup.discountCode || ''} />
 
         <div>
-          <label className="block text-[var(--text-sm)] font-medium mb-1">Frequency</label>
-          <select name="frequency" defaultValue={popup.frequency} className="w-full h-10 px-3 rounded-[var(--radius-md)] bg-[var(--color-bg)] border border-[var(--color-border)]">
+          <label className="block text-(--text-sm) font-medium mb-1">Frequency</label>
+          <select name="frequency" defaultValue={popup.frequency} className="w-full h-10 px-3 rounded-(--radius-md) bg-(--color-bg) border border-(--color-border)">
             <option value="ONCE">Once</option>
             <option value="SESSION">Once per session</option>
             <option value="DAILY">Once per day</option>
@@ -81,11 +81,11 @@ export default async function EditPopupPage({
         </div>
 
         <div>
-          <label className="flex items-center gap-2 text-[var(--text-sm)]">
+          <label className="flex items-center gap-2 text-(--text-sm)">
             <input type="checkbox" name="isActive" defaultChecked={popup.isActive} />
             Active
           </label>
-          <p className="text-[var(--text-xs)] text-[var(--color-text-muted)] mt-1">
+          <p className="text-(--text-xs) text-(--color-text-muted) mt-1">
             Only one popup can be active at a time. Activating this one will deactivate any other active popup.
           </p>
         </div>

@@ -32,17 +32,17 @@ export default function AdminLoginPage() {
   return (
     <>
     <style>{`header, footer { display: none !important; } main { padding: 0 !important; }`}</style>
-    <div className="min-h-screen flex items-center justify-center p-[var(--space-4)]" style={{ background: 'var(--color-bg-alt)' }}>
+    <div className="min-h-screen flex items-center justify-center p-(--space-4)" style={{ background: 'var(--color-bg-alt)' }}>
       <div className="w-full max-w-sm">
-        <div className="text-center mb-[var(--space-8)]">
-          <Image src="/images/logos/MissChili_Logos_MissChili.png" alt="Miss Chili" width={60} height={82} className="mx-auto mb-[var(--space-4)] h-[72px] w-auto" />
-          <h1 className="text-[var(--text-2xl)] font-bold" style={{ fontFamily: 'var(--font-display)' }}>Admin Login</h1>
-          <p className="text-[var(--text-sm)] text-[var(--color-text-muted)] mt-1">Miss Chili Dashboard</p>
+        <div className="text-center mb-(--space-8)">
+          <Image src="/images/logos/MissChili_Logos_MissChili.png" alt="Miss Chili" width={60} height={82} className="mx-auto mb-(--space-4) h-[72px] w-auto" />
+          <h1 className="text-(--text-2xl) font-bold" style={{ fontFamily: 'var(--font-display)' }}>Admin Login</h1>
+          <p className="text-(--text-sm) text-(--color-text-muted) mt-1">Miss Chili Dashboard</p>
         </div>
-        <form onSubmit={handleSubmit} className="card p-[var(--space-6)] space-y-[var(--space-4)]">
+        <form onSubmit={handleSubmit} className="card p-(--space-6) space-y-(--space-4)">
           <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
           <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
-          {error && <p className="text-[var(--text-sm)] text-[var(--color-danger)]">{error}</p>}
+          {error && <p className="text-(--text-sm) text-(--color-danger)">{error}</p>}
           <Button variant="primary" type="submit" size="lg" className="w-full" isLoading={isLoading}>Sign In</Button>
         </form>
       </div>

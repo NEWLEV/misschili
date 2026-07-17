@@ -47,13 +47,13 @@ function ResetPasswordForm() {
   };
 
   if (!token || !email) {
-    return <p className="text-[var(--text-sm)] text-center">This reset link is invalid or has expired.</p>;
+    return <p className="text-(--text-sm) text-center">This reset link is invalid or has expired.</p>;
   }
 
   if (success) {
     return (
-      <div className="text-center space-y-[var(--space-4)]">
-        <p className="text-[var(--text-sm)]">Your password has been reset.</p>
+      <div className="text-center space-y-(--space-4)">
+        <p className="text-(--text-sm)">Your password has been reset.</p>
         <Button variant="primary" size="lg" className="w-full" onClick={() => router.push('/account/login')}>
           Sign In
         </Button>
@@ -64,11 +64,11 @@ function ResetPasswordForm() {
   return (
     <>
       {error && (
-        <div className="bg-[var(--color-danger)]/10 text-[var(--color-danger)] p-3 rounded-[var(--radius-md)] mb-[var(--space-4)] text-[var(--text-sm)] text-center">
+        <div className="bg-(--color-danger)/10 text-(--color-danger) p-3 rounded-(--radius-md) mb-(--space-4) text-(--text-sm) text-center">
           {error}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="space-y-[var(--space-4)]">
+      <form onSubmit={handleSubmit} className="space-y-(--space-4)">
         <Input label="New Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="new-password" />
         <Input label="Confirm Password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" />
         <Button variant="primary" type="submit" size="lg" className="w-full" isLoading={isLoading}>Reset Password</Button>
@@ -80,15 +80,15 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
   return (
     <div className="section-container section-padding flex justify-center items-center min-h-[60vh]">
-      <div className="card p-[var(--space-8)] w-full max-w-md">
-        <h1 className="text-[var(--text-3xl)] font-bold mb-[var(--space-6)] text-center" style={{ fontFamily: 'var(--font-display)' }}>
+      <div className="card p-(--space-8) w-full max-w-md">
+        <h1 className="text-(--text-3xl) font-bold mb-(--space-6) text-center" style={{ fontFamily: 'var(--font-display)' }}>
           Reset Password
         </h1>
-        <Suspense fallback={<div className="text-[var(--text-sm)] text-center">Loading...</div>}>
+        <Suspense fallback={<div className="text-(--text-sm) text-center">Loading...</div>}>
           <ResetPasswordForm />
         </Suspense>
-        <div className="mt-[var(--space-6)] text-center text-[var(--text-sm)] text-[var(--color-text-muted)]">
-          <p><Link href="/account/login" className="text-[var(--color-primary)]">Back to sign in</Link></p>
+        <div className="mt-(--space-6) text-center text-(--text-sm) text-(--color-text-muted)">
+          <p><Link href="/account/login" className="text-(--color-primary)">Back to sign in</Link></p>
         </div>
       </div>
     </div>

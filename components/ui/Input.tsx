@@ -12,11 +12,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
     return (
-      <div className="flex flex-col gap-[var(--space-1)]">
+      <div className="flex flex-col gap-(--space-1)">
         {label && (
           <label
             htmlFor={inputId}
-            className="text-[var(--text-sm)] font-medium text-[var(--color-text-secondary)]"
+            className="text-(--text-sm) font-medium text-(--color-text-secondary)"
           >
             {label}
           </label>
@@ -25,13 +25,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={cn(
-            'h-11 px-[var(--space-4)] rounded-[var(--radius-md)]',
-            'bg-[var(--color-surface)] text-[var(--color-text)]',
-            'border border-[var(--color-border)]',
-            'placeholder:text-[var(--color-text-muted)]',
-            'transition-all duration-[var(--duration-fast)]',
-            'focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]',
-            error && 'border-[var(--color-danger)] focus:border-[var(--color-danger)] focus:ring-[var(--color-danger)]',
+            'h-11 px-(--space-4) rounded-(--radius-md)',
+            'bg-(--color-surface) text-(--color-text)',
+            'border border-(--color-border)',
+            'placeholder:text-(--color-text-muted)',
+            'transition-all duration-(--duration-fast)',
+            'focus:outline-none focus:border-(--color-primary) focus:ring-1 focus:ring-(--color-primary)',
+            error && 'border-(--color-danger) focus:border-(--color-danger) focus:ring-(--color-danger)',
             className
           )}
           aria-invalid={error ? 'true' : undefined}
@@ -39,12 +39,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <p id={`${inputId}-error`} className="text-[var(--text-xs)] text-[var(--color-danger)]" role="alert">
+          <p id={`${inputId}-error`} className="text-(--text-xs) text-(--color-danger)" role="alert">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p id={`${inputId}-helper`} className="text-[var(--text-xs)] text-[var(--color-text-muted)]">
+          <p id={`${inputId}-helper`} className="text-(--text-xs) text-(--color-text-muted)">
             {helperText}
           </p>
         )}

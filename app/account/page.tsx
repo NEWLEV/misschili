@@ -14,16 +14,16 @@ export default async function AccountPage() {
 
   return (
     <div className="section-container section-padding max-w-lg mx-auto text-center">
-      <h1 className="text-[var(--text-4xl)] font-bold mb-[var(--space-4)]" style={{ fontFamily: 'var(--font-display)' }}>My Account</h1>
-      <p className="text-[var(--color-text-secondary)] mb-[var(--space-8)]">
+      <h1 className="text-(--text-4xl) font-bold mb-(--space-4)" style={{ fontFamily: 'var(--font-display)' }}>My Account</h1>
+      <p className="text-(--color-text-secondary) mb-(--space-8)">
         Sign in to view your orders, manage addresses, and track shipments.
       </p>
-      <div className="card p-[var(--space-8)] space-y-[var(--space-4)]">
+      <div className="card p-(--space-8) space-y-(--space-4)">
         <Link href="/account/login">
           <Button variant="primary" size="lg" className="w-full">Sign In</Button>
         </Link>
-        <p className="text-[var(--text-sm)] text-[var(--color-text-muted)]">
-          Don&apos;t have an account? <Link href="/account/signup" className="text-[var(--color-primary)]">Sign up</Link>
+        <p className="text-(--text-sm) text-(--color-text-muted)">
+          Don&apos;t have an account? <Link href="/account/signup" className="text-(--color-primary)">Sign up</Link>
         </p>
       </div>
     </div>

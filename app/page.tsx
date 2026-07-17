@@ -69,23 +69,23 @@ export default async function HomePage() {
         {/* Background */}
         <FlameBackground />
 
-        <div className="section-container relative z-10 py-[var(--space-20)]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--space-12)] items-center">
+        <div className="section-container relative z-10 py-(--space-20)">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-(--space-12) items-center">
             <div className="max-w-xl">
               <h1
-                className="text-[var(--text-5xl)] font-bold mb-[var(--space-5)] animate-slide-up text-gradient-fire"
+                className="text-(--text-5xl) font-bold mb-(--space-5) animate-slide-up text-gradient-fire"
                 style={{ fontFamily: 'var(--font-display)', animationDelay: '100ms' }}
               >
                 {heroHeadline}
               </h1>
               <p
-                className="text-[var(--text-lg)] text-white/85 mb-[var(--space-8)] max-w-lg animate-slide-up"
+                className="text-(--text-lg) text-white/85 mb-(--space-8) max-w-lg animate-slide-up"
                 style={{ animationDelay: '200ms' }}
               >
                 {heroSubtext}
               </p>
               <div
-                className="flex flex-wrap gap-[var(--space-3)] animate-slide-up"
+                className="flex flex-wrap gap-(--space-3) animate-slide-up"
                 style={{ animationDelay: '300ms' }}
               >
                 <Link href={heroCtaUrl}>
@@ -102,7 +102,7 @@ export default async function HomePage() {
 
               {/* Trust Strip */}
               <div
-                className="flex flex-wrap gap-[var(--space-6)] mt-[var(--space-10)] animate-slide-up"
+                className="flex flex-wrap gap-(--space-6) mt-(--space-10) animate-slide-up"
                 style={{ animationDelay: '400ms' }}
               >
                 {[
@@ -111,9 +111,9 @@ export default async function HomePage() {
                   { icon: '🌶️', text: 'Small Batch' },
                   { icon: '✨', text: 'Zero Calories' },
                 ].map((badge) => (
-                  <div key={badge.text} className="flex items-center gap-[var(--space-2)]">
+                  <div key={badge.text} className="flex items-center gap-(--space-2)">
                     <span className="text-lg">{badge.icon}</span>
-                    <span className="text-[var(--text-xs)] text-white/70 font-medium">
+                    <span className="text-(--text-xs) text-white/70 font-medium">
                       {badge.text}
                     </span>
                   </div>
@@ -145,11 +145,11 @@ export default async function HomePage() {
       {/* ─── Featured Products ────────────────────────── */}
       <section className="section-padding" style={{ background: 'var(--color-bg)' }}>
         <div className="section-container">
-          <div className="text-center mb-[var(--space-12)]">
-            <h2 className="text-[var(--text-3xl)] font-bold mb-[var(--space-3)]" style={{ fontFamily: 'var(--font-display)' }}>
+          <div className="text-center mb-(--space-12)">
+            <h2 className="text-(--text-3xl) font-bold mb-(--space-3)" style={{ fontFamily: 'var(--font-display)' }}>
               Our Sauces
             </h2>
-            <p className="text-[var(--color-text-secondary)] max-w-md mx-auto">
+            <p className="text-(--color-text-secondary) max-w-md mx-auto">
               Two distinct heat profiles. Both handcrafted with real peppers, fresh herbs, and no artificial anything.
             </p>
           </div>
@@ -179,15 +179,15 @@ export default async function HomePage() {
         </div>
 
         <div className="section-container relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-[var(--space-12)] items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-(--space-12) items-center">
             <div className="lg:col-span-3">
-              <p className="text-[var(--text-sm)] font-semibold text-white tracking-[var(--tracking-wider)] uppercase mb-[var(--space-3)]">
+              <p className="text-(--text-sm) font-semibold text-white tracking-(--tracking-wider) uppercase mb-(--space-3)">
                 Our Origin
               </p>
-              <h2 className="text-[var(--text-4xl)] font-bold mb-[var(--space-5)] text-white" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2 className="text-(--text-4xl) font-bold mb-(--space-5) text-white" style={{ fontFamily: 'var(--font-display)' }}>
                 The Founder&apos;s Story
               </h2>
-              <div className="space-y-[var(--space-4)] text-white/85 text-[var(--text-base)]">
+              <div className="space-y-(--space-4) text-white/85 text-(--text-base)">
                 <p>
                   Miss Chili&apos;s journey began with a single, unexpected gift: a ghost pepper
                   plant. That one seedling sparked a deep-rooted passion for the craft of cultivating
@@ -223,7 +223,7 @@ export default async function HomePage() {
                 </p>
               </div>
               <p
-                className="text-[var(--text-xl)] font-bold text-white mt-[var(--space-6)] italic"
+                className="text-(--text-xl) font-bold text-white mt-(--space-6) italic"
                 style={{ fontFamily: 'var(--font-display)' }}
               >
                 Miss Chili. Just the way you like it.
@@ -246,22 +246,22 @@ export default async function HomePage() {
       {reviews.length > 0 && (
         <section className="section-padding" style={{ background: 'var(--color-bg-alt)' }}>
           <div className="section-container">
-            <div className="mb-[var(--space-10)]">
-              <h2 className="text-[var(--text-3xl)] font-bold mb-[var(--space-3)]" style={{ fontFamily: 'var(--font-display)' }}>
+            <div className="mb-(--space-10)">
+              <h2 className="text-(--text-3xl) font-bold mb-(--space-3)" style={{ fontFamily: 'var(--font-display)' }}>
                 What Heat Seekers Say
               </h2>
-              <p className="text-[var(--color-text-secondary)]">
+              <p className="text-(--color-text-secondary)">
                 Real reviews from real hot sauce lovers. No paid promotions.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-5)]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-(--space-5)">
               {reviews.map((review) => (
                 <article
                   key={review.id}
-                  className="card p-[var(--space-6)]"
+                  className="card p-(--space-6)"
                 >
-                  <div className="flex items-center gap-[var(--space-3)] mb-[var(--space-4)]">
+                  <div className="flex items-center gap-(--space-3) mb-(--space-4)">
                     <StarRating rating={review.rating} />
                     {review.verified && (
                       <span className="badge badge-success text-[10px]">
@@ -269,10 +269,10 @@ export default async function HomePage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-[var(--color-text)] mb-[var(--space-4)] italic">
+                  <p className="text-(--color-text) mb-(--space-4) italic">
                     &ldquo;{review.text}&rdquo;
                   </p>
-                  <p className="text-[var(--text-sm)] font-medium text-[var(--color-text-secondary)]">
+                  <p className="text-(--text-sm) font-medium text-(--color-text-secondary)">
                     — {review.name}
                   </p>
                 </article>
@@ -285,10 +285,10 @@ export default async function HomePage() {
       {/* ─── Ingredients Callout ──────────────────────── */}
       <section className="section-padding" style={{ background: 'var(--color-bg)' }}>
         <div className="section-container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--space-12)]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-(--space-12)">
             {featuredProducts.map((product) => (
-              <div key={product.id} className="card p-[var(--space-6)]">
-                <div className="flex items-start gap-[var(--space-4)]">
+              <div key={product.id} className="card p-(--space-6)">
+                <div className="flex items-start gap-(--space-4)">
                   <Image
                     src={product.imageUrl}
                     alt={product.name}
@@ -297,17 +297,17 @@ export default async function HomePage() {
                     className="h-[72px] w-auto shrink-0"
                   />
                   <div>
-                    <h3 className="text-[var(--text-lg)] font-semibold mb-[var(--space-2)]" style={{ fontFamily: 'var(--font-display)' }}>
+                    <h3 className="text-(--text-lg) font-semibold mb-(--space-2)" style={{ fontFamily: 'var(--font-display)' }}>
                       {product.name}
                     </h3>
-                    <p className="text-[var(--text-sm)] text-[var(--color-text-muted)] mb-[var(--space-2)]">
+                    <p className="text-(--text-sm) text-(--color-text-muted) mb-(--space-2)">
                       {product.volume} · {product.heatLevel}/10 Heat
                     </p>
-                    <p className="text-[var(--text-sm)] text-[var(--color-text-secondary)]">
-                      <span className="font-medium text-[var(--color-text)]">Ingredients: </span>
+                    <p className="text-(--text-sm) text-(--color-text-secondary)">
+                      <span className="font-medium text-(--color-text)">Ingredients: </span>
                       {product.ingredients}
                     </p>
-                    <p className="text-[var(--text-xs)] text-[var(--color-text-muted)] mt-[var(--space-2)]">
+                    <p className="text-(--text-xs) text-(--color-text-muted) mt-(--space-2)">
                       0 Calories per serving · Zero fat · All natural
                     </p>
                   </div>
@@ -322,10 +322,10 @@ export default async function HomePage() {
       <section className="section-padding" style={{ background: 'var(--color-surface)' }}>
         <div className="section-container">
           <div className="max-w-xl mx-auto text-center">
-            <h2 className="text-[var(--text-3xl)] font-bold mb-[var(--space-3)]" style={{ fontFamily: 'var(--font-display)' }}>
+            <h2 className="text-(--text-3xl) font-bold mb-(--space-3)" style={{ fontFamily: 'var(--font-display)' }}>
               Join the Heat
             </h2>
-            <p className="text-[var(--color-text-secondary)] mb-[var(--space-6)]">
+            <p className="text-(--color-text-secondary) mb-(--space-6)">
               New flavors, limited drops, and recipes delivered straight to your inbox. No spam — just spice.
             </p>
 

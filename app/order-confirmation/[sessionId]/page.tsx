@@ -23,10 +23,10 @@ export default async function OrderConfirmationPage({
   if (!order) {
     return (
       <div className="section-container section-padding text-center max-w-lg mx-auto">
-        <h1 className="text-[var(--text-3xl)] font-bold mb-[var(--space-4)]" style={{ fontFamily: 'var(--font-display)' }}>
+        <h1 className="text-(--text-3xl) font-bold mb-(--space-4)" style={{ fontFamily: 'var(--font-display)' }}>
           Thank You for Your Order! 🌶️
         </h1>
-        <p className="text-[var(--color-text-secondary)] mb-[var(--space-6)]">
+        <p className="text-(--color-text-secondary) mb-(--space-6)">
           Your payment was successful and your order is being processed. A confirmation
           email with your order details is on its way — it may take a minute to arrive.
         </p>
@@ -37,46 +37,46 @@ export default async function OrderConfirmationPage({
 
   return (
     <div className="section-container section-padding max-w-2xl mx-auto">
-      <div className="text-center mb-[var(--space-8)]">
-        <h1 className="text-[var(--text-3xl)] font-bold mb-[var(--space-3)]" style={{ fontFamily: 'var(--font-display)' }}>
+      <div className="text-center mb-(--space-8)">
+        <h1 className="text-(--text-3xl) font-bold mb-(--space-3)" style={{ fontFamily: 'var(--font-display)' }}>
           Thank You for Your Order! 🌶️
         </h1>
-        <p className="text-[var(--color-text-secondary)]">
-          Order <span className="font-semibold text-[var(--color-text)]">{order.orderNumber}</span> is confirmed.
+        <p className="text-(--color-text-secondary)">
+          Order <span className="font-semibold text-(--color-text)">{order.orderNumber}</span> is confirmed.
           A receipt has been emailed to you.
         </p>
       </div>
 
-      <div className="card p-[var(--space-6)] mb-[var(--space-6)]">
-        <h2 className="text-[var(--text-lg)] font-semibold mb-[var(--space-4)]">Order Summary</h2>
-        <div className="divide-y divide-[var(--color-border)]">
+      <div className="card p-(--space-6) mb-(--space-6)">
+        <h2 className="text-(--text-lg) font-semibold mb-(--space-4)">Order Summary</h2>
+        <div className="divide-y divide-(--color-border)">
           {order.items.map((item) => (
-            <div key={item.id} className="py-[var(--space-3)] flex justify-between">
+            <div key={item.id} className="py-(--space-3) flex justify-between">
               <div>
                 <p className="font-medium">{item.productName}</p>
-                <p className="text-[var(--text-sm)] text-[var(--color-text-muted)]">Qty: {item.quantity}</p>
+                <p className="text-(--text-sm) text-(--color-text-muted)">Qty: {item.quantity}</p>
               </div>
               <p className="font-semibold">{formatPrice(Number(item.totalPrice))}</p>
             </div>
           ))}
         </div>
-        <div className="border-t border-[var(--color-border)] mt-[var(--space-4)] pt-[var(--space-4)] space-y-[var(--space-2)] text-[var(--text-sm)]">
-          <div className="flex justify-between"><span className="text-[var(--color-text-muted)]">Subtotal</span><span>{formatPrice(Number(order.subtotal))}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--color-text-muted)]">Shipping</span><span>{Number(order.shippingCost) === 0 ? 'Free' : formatPrice(Number(order.shippingCost))}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--color-text-muted)]">Tax</span><span>{formatPrice(Number(order.taxAmount))}</span></div>
+        <div className="border-t border-(--color-border) mt-(--space-4) pt-(--space-4) space-y-(--space-2) text-(--text-sm)">
+          <div className="flex justify-between"><span className="text-(--color-text-muted)">Subtotal</span><span>{formatPrice(Number(order.subtotal))}</span></div>
+          <div className="flex justify-between"><span className="text-(--color-text-muted)">Shipping</span><span>{Number(order.shippingCost) === 0 ? 'Free' : formatPrice(Number(order.shippingCost))}</span></div>
+          <div className="flex justify-between"><span className="text-(--color-text-muted)">Tax</span><span>{formatPrice(Number(order.taxAmount))}</span></div>
           {Number(order.discountAmount) > 0 && (
-            <div className="flex justify-between text-[var(--color-success)]"><span>Discount</span><span>−{formatPrice(Number(order.discountAmount))}</span></div>
+            <div className="flex justify-between text-(--color-success)"><span>Discount</span><span>−{formatPrice(Number(order.discountAmount))}</span></div>
           )}
-          <div className="flex justify-between font-bold text-[var(--text-base)] pt-[var(--space-2)] border-t border-[var(--color-border)]">
+          <div className="flex justify-between font-bold text-(--text-base) pt-(--space-2) border-t border-(--color-border)">
             <span>Total</span><span>{formatPrice(Number(order.total))}</span>
           </div>
         </div>
       </div>
 
       {order.shippingAddress && (
-        <div className="card p-[var(--space-6)] mb-[var(--space-6)]">
-          <h2 className="text-[var(--text-lg)] font-semibold mb-[var(--space-3)]">Shipping To</h2>
-          <div className="text-[var(--text-sm)] text-[var(--color-text-secondary)] space-y-1">
+        <div className="card p-(--space-6) mb-(--space-6)">
+          <h2 className="text-(--text-lg) font-semibold mb-(--space-3)">Shipping To</h2>
+          <div className="text-(--text-sm) text-(--color-text-secondary) space-y-1">
             <p>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
             <p>{order.shippingAddress.address1}</p>
             {order.shippingAddress.address2 && <p>{order.shippingAddress.address2}</p>}

@@ -120,10 +120,10 @@ export function PopupManager() {
 
   return (
     <Modal isOpen={!!activePopup} onClose={close} title={activePopup.title}>
-      <div className="space-y-[var(--space-4)]">
-        <p className="text-[var(--text-sm)] text-[var(--color-text-secondary)]">{activePopup.message}</p>
+      <div className="space-y-(--space-4)">
+        <p className="text-(--text-sm) text-(--color-text-secondary)">{activePopup.message}</p>
         {activePopup.discountCode && (
-          <p className="text-[var(--text-lg)] font-bold text-[var(--color-primary)]">
+          <p className="text-(--text-lg) font-bold text-(--color-primary)">
             Code: {activePopup.discountCode}
           </p>
         )}

@@ -11,8 +11,8 @@ const variantClasses: Record<string, string> = {
   success: 'badge badge-success',
   warning: 'badge badge-warning',
   danger: 'badge badge-danger',
-  info: 'badge bg-[oklch(from_var(--color-info)_l_c_h_/_0.15)] text-[var(--color-info)]',
-  neutral: 'badge bg-[var(--color-surface-hover)] text-[var(--color-text-secondary)]',
+  info: 'badge bg-[oklch(from_var(--color-info)_l_c_h_/_0.15)] text-(--color-info)',
+  neutral: 'badge bg-(--color-surface-hover) text-(--color-text-secondary)',
 };
 
 export function Badge({ variant = 'neutral', children, className }: BadgeProps) {

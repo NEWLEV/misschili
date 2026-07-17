@@ -53,18 +53,18 @@ export default function SignupPage() {
 
   return (
     <div className="section-container section-padding flex justify-center items-center min-h-[60vh]">
-      <div className="card p-[var(--space-8)] w-full max-w-md">
-        <h1 className="text-[var(--text-3xl)] font-bold mb-[var(--space-6)] text-center" style={{ fontFamily: 'var(--font-display)' }}>
+      <div className="card p-(--space-8) w-full max-w-md">
+        <h1 className="text-(--text-3xl) font-bold mb-(--space-6) text-center" style={{ fontFamily: 'var(--font-display)' }}>
           Create Account
         </h1>
 
         {error && (
-          <div className="bg-[var(--color-danger)]/10 text-[var(--color-danger)] p-3 rounded-[var(--radius-md)] mb-[var(--space-4)] text-[var(--text-sm)] text-center">
+          <div className="bg-(--color-danger)/10 text-(--color-danger) p-3 rounded-(--radius-md) mb-(--space-4) text-(--text-sm) text-center">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-[var(--space-4)]">
+        <form onSubmit={handleSubmit} className="space-y-(--space-4)">
           <Input label="Name" type="text" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
           <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
           <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="new-password" />
@@ -72,8 +72,8 @@ export default function SignupPage() {
           <Button variant="primary" type="submit" size="lg" className="w-full" isLoading={isLoading}>Create Account</Button>
         </form>
 
-        <div className="mt-[var(--space-6)] text-center text-[var(--text-sm)] text-[var(--color-text-muted)]">
-          <p>Already have an account? <Link href="/account/login" className="text-[var(--color-primary)]">Sign in</Link></p>
+        <div className="mt-(--space-6) text-center text-(--text-sm) text-(--color-text-muted)">
+          <p>Already have an account? <Link href="/account/login" className="text-(--color-primary)">Sign in</Link></p>
         </div>
       </div>
     </div>

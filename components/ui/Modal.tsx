@@ -53,30 +53,30 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-[var(--z-modal)] bg-transparent text-[var(--color-text)] p-0 m-0 w-full h-full max-w-full max-h-full"
+      className="fixed inset-0 z-(--z-modal) bg-transparent text-(--color-text) p-0 m-0 w-full h-full max-w-full max-h-full"
       onClick={(e) => {
         if (e.target === dialogRef.current) onClose();
       }}
     >
-      <div className="flex items-center justify-center min-h-full p-[var(--space-4)]">
+      <div className="flex items-center justify-center min-h-full p-(--space-4)">
         <div
           className={cn(
-            'w-full bg-[var(--color-surface)] text-[var(--color-text)] rounded-[var(--radius-xl)]',
-            'border border-[var(--color-border)]',
-            'shadow-[var(--shadow-xl)]',
+            'w-full bg-(--color-surface) text-(--color-text) rounded-(--radius-xl)',
+            'border border-(--color-border)',
+            'shadow-(--shadow-xl)',
             'animate-slide-up',
-            'p-[var(--space-6)]',
+            'p-(--space-6)',
             sizes[size],
             className
           )}
           onClick={(e) => e.stopPropagation()}
         >
           {title && (
-            <div className="flex items-center justify-between mb-[var(--space-5)]">
-              <h3 className="text-[var(--text-xl)] font-semibold text-[var(--color-text)]">{title}</h3>
+            <div className="flex items-center justify-between mb-(--space-5)">
+              <h3 className="text-(--text-xl) font-semibold text-(--color-text)">{title}</h3>
               <button
                 onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-md)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-(--radius-md) hover:bg-(--color-surface-hover) text-(--color-text-muted) hover:text-(--color-text) transition-colors"
                 aria-label="Close modal"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
