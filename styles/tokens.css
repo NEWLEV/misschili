@@ -8,6 +8,7 @@
   /* ─── Typography ──────────────────────────────── */
   --font-display: 'Boska', 'Georgia', serif;
   --font-body: 'Satoshi', 'system-ui', sans-serif;
+  --font-stain: 'Nicotine Stains', 'Boska', 'Georgia', serif;
 
   --text-xs:   clamp(0.75rem, 0.7rem + 0.25vw, 0.8125rem);
   --text-sm:   clamp(0.8125rem, 0.75rem + 0.3vw, 0.875rem);

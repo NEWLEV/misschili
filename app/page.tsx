@@ -75,7 +75,7 @@ export default async function HomePage() {
             <div className="max-w-xl">
               <h1
                 className="text-(--text-5xl) font-bold mb-(--space-5) animate-slide-up text-gradient-fire"
-                style={{ fontFamily: 'var(--font-display)', animationDelay: '100ms' }}
+                style={{ fontFamily: 'var(--font-stain)', animationDelay: '100ms' }}
               >
                 {heroHeadline}
               </h1>
@@ -185,7 +185,7 @@ export default async function HomePage() {
               <p className="text-(--text-sm) font-semibold text-white tracking-wider uppercase mb-(--space-3)">
                 Our Origin
               </p>
-              <h2 className="text-(--text-4xl) font-bold mb-(--space-5) text-white" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2 className="text-(--text-4xl) font-bold mb-(--space-5) text-white" style={{ fontFamily: 'var(--font-stain)' }}>
                 The Founder&apos;s Story
               </h2>
               <div className="space-y-(--space-4) text-white/85 text-(--text-base)">
