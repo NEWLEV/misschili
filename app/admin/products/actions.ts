@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireAdminRole, ROLE_GROUPS } from '@/lib/admin-auth';
 import { writeAuditLog } from '@/lib/audit-log';
+import { setProductStatus } from './[id]/actions';
 
 export async function createProduct(formData: FormData) {
   const session = await requireAdminRole(ROLE_GROUPS.CATALOG_WRITE);
@@ -75,4 +76,9 @@ export async function createProduct(formData: FormData) {
   revalidatePath('/');
   revalidatePath('/products');
   redirect(`/admin/products/${product.id}`);
+}
+
+export async function toggleProductStatus(productId: string, currentStatus: string): Promise<void> {
+  const newStatus = currentStatus === 'ARCHIVED' ? 'ACTIVE' : 'ARCHIVED';
+  return setProductStatus(productId, newStatus as 'ACTIVE' | 'ARCHIVED');
 }

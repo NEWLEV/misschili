@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { formatPrice } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { updateOrderStatus, refundOrder } from './actions';
+import { updateOrderStatusFromForm, refundOrder } from './actions';
 import { Button } from '@/components/ui/Button';
 import { ConfirmSubmitButton } from '@/components/admin/ConfirmSubmitButton';
 import type { OrderStatus } from '@prisma/client';
@@ -80,16 +80,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
           {/* Admin Actions */}
           <div className="card p-(--space-6)">
             <h2 className="text-(--text-lg) font-semibold mb-(--space-4)">Manage Order</h2>
-            <form action={async (formData) => {
-              'use server';
-              await updateOrderStatus(
-                order.id,
-                formData.get('status') as OrderStatus,
-                formData.get('adminNotes') as string,
-                formData.get('trackingNumber') as string,
-                formData.get('trackingUrl') as string
-              );
-            }} className="space-y-(--space-4)">
+            <form action={updateOrderStatusFromForm.bind(null, order.id)} className="space-y-(--space-4)">
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Status</label>
                 <select name="status" defaultValue={order.status} className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)">
@@ -126,7 +117,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
                 Issues a real refund through Stripe for the full amount ({formatPrice(Number(order.total))}) and marks the order Refunded once confirmed.
               </p>
               <ConfirmSubmitButton
-                action={async () => await refundOrder(order.id)}
+                action={refundOrder.bind(null, order.id)}
                 confirmMessage={`Refund ${formatPrice(Number(order.total))} to the customer via Stripe? This cannot be undone.`}
                 variant="danger"
               >

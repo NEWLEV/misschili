@@ -34,10 +34,7 @@ export default async function EditPopupPage({
         Edit Popup
       </h1>
 
-      <form action={async (formData) => {
-        'use server';
-        await updatePopup(popup.id, formData);
-      }} className="card p-(--space-6) space-y-(--space-4)">
+      <form action={updatePopup.bind(null, popup.id)} className="card p-(--space-6) space-y-(--space-4)">
         <div>
           <label className="block text-(--text-sm) font-medium mb-1">Type</label>
           <select name="type" defaultValue={popup.type} className="w-full h-10 px-3 rounded-md bg-(--color-bg) border border-(--color-border)">

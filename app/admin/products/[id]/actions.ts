@@ -6,6 +6,8 @@ import { revalidatePath } from 'next/cache';
 import { requireAdminRole, ROLE_GROUPS } from '@/lib/admin-auth';
 import { writeAuditLog } from '@/lib/audit-log';
 import { logger } from '@/lib/logger';
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
 
 function revalidateProductPages(productId: string, slug: string) {
   revalidatePath(`/admin/products/${productId}`);
@@ -17,7 +19,7 @@ function revalidateProductPages(productId: string, slug: string) {
 
 const productDetailsSchema = productSchema.omit({ basePrice: true, salePrice: true, saleStart: true, saleEnd: true });
 
-export async function updateProduct(productId: string, formData: FormData) {
+export async function updateProduct(productId: string, formData: FormData): Promise<void> {
   const session = await requireAdminRole(ROLE_GROUPS.CATALOG_CONTENT);
 
   const categoryIds = formData.getAll('categoryIds') as string[];
@@ -36,7 +38,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   });
 
   if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0].message };
+    return;
   }
 
   const data = parsed.data;
@@ -83,14 +85,12 @@ export async function updateProduct(productId: string, formData: FormData) {
     });
 
     revalidateProductPages(productId, product.slug);
-    return { success: true };
   } catch (error) {
     logger.error({ err: error, productId }, 'Error updating product');
-    return { success: false, error: 'Failed to update product' };
   }
 }
 
-export async function setProductStatus(productId: string, status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED') {
+export async function setProductStatus(productId: string, status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED'): Promise<void> {
   const session = await requireAdminRole(ROLE_GROUPS.CATALOG_CONTENT);
 
   try {
@@ -112,10 +112,8 @@ export async function setProductStatus(productId: string, status: 'DRAFT' | 'ACT
     });
 
     revalidateProductPages(productId, product.slug);
-    return { success: true };
   } catch (error) {
     logger.error({ err: error, productId }, 'Error updating product status');
-    return { success: false, error: 'Failed to update product status' };
   }
 }
 
@@ -199,7 +197,7 @@ export async function addProductImage(productId: string, url: string, altText: s
 
   try {
     const product = await prisma.product.findUnique({ where: { id: productId }, select: { slug: true } });
-    if (!product) return { success: false, error: 'Product not found' };
+    if (!product) return;
 
     const maxSortOrder = await prisma.productImage.aggregate({
       where: { productId },
@@ -220,14 +218,12 @@ export async function addProductImage(productId: string, url: string, altText: s
     await writeAuditLog({ session, action: 'product.image_added', targetType: 'Product', targetId: productId, after: { imageId: image.id, url: image.url } });
 
     revalidateProductPages(productId, product.slug);
-    return { success: true };
   } catch (error) {
     logger.error({ err: error, productId }, 'Error adding product image');
-    return { success: false, error: 'Failed to add image' };
   }
 }
 
-export async function deleteProductImage(imageId: string) {
+export async function deleteProductImage(imageId: string): Promise<void> {
   const session = await requireAdminRole(ROLE_GROUPS.CATALOG_CONTENT);
 
   try {
@@ -235,7 +231,7 @@ export async function deleteProductImage(imageId: string) {
       where: { id: imageId },
       include: { product: { select: { id: true, slug: true } } },
     });
-    if (!image) return { success: false, error: 'Image not found' };
+    if (!image) return;
 
     await prisma.productImage.delete({ where: { id: imageId } });
 
@@ -254,14 +250,12 @@ export async function deleteProductImage(imageId: string) {
     await writeAuditLog({ session, action: 'product.image_deleted', targetType: 'Product', targetId: image.product.id, before: { imageId, url: image.url } });
 
     revalidateProductPages(image.product.id, image.product.slug);
-    return { success: true };
   } catch (error) {
     logger.error({ err: error, imageId }, 'Error deleting product image');
-    return { success: false, error: 'Failed to delete image' };
   }
 }
 
-export async function setFeaturedImage(imageId: string) {
+export async function setFeaturedImage(imageId: string): Promise<void> {
   const session = await requireAdminRole(ROLE_GROUPS.CATALOG_CONTENT);
 
   try {
@@ -269,7 +263,7 @@ export async function setFeaturedImage(imageId: string) {
       where: { id: imageId },
       include: { product: { select: { id: true, slug: true } } },
     });
-    if (!image) return { success: false, error: 'Image not found' };
+    if (!image) return;
 
     await prisma.$transaction([
       prisma.productImage.updateMany({ where: { productId: image.product.id }, data: { isFeatured: false } }),
@@ -279,14 +273,12 @@ export async function setFeaturedImage(imageId: string) {
     await writeAuditLog({ session, action: 'product.image_featured', targetType: 'Product', targetId: image.product.id, after: { imageId } });
 
     revalidateProductPages(image.product.id, image.product.slug);
-    return { success: true };
   } catch (error) {
     logger.error({ err: error, imageId }, 'Error setting featured image');
-    return { success: false, error: 'Failed to set featured image' };
   }
 }
 
-export async function reorderProductImage(imageId: string, direction: 'up' | 'down') {
+export async function reorderProductImage(imageId: string, direction: 'up' | 'down'): Promise<void> {
   const session = await requireAdminRole(ROLE_GROUPS.CATALOG_CONTENT);
 
   try {
@@ -294,7 +286,7 @@ export async function reorderProductImage(imageId: string, direction: 'up' | 'do
       where: { id: imageId },
       include: { product: { select: { id: true, slug: true } } },
     });
-    if (!image) return { success: false, error: 'Image not found' };
+    if (!image) return;
 
     const neighbor = await prisma.productImage.findFirst({
       where: {
@@ -303,7 +295,7 @@ export async function reorderProductImage(imageId: string, direction: 'up' | 'do
       },
       orderBy: { sortOrder: direction === 'up' ? 'desc' : 'asc' },
     });
-    if (!neighbor) return { success: true }; // already at the edge, nothing to do
+    if (!neighbor) return;
 
     await prisma.$transaction([
       prisma.productImage.update({ where: { id: image.id }, data: { sortOrder: neighbor.sortOrder } }),
@@ -313,9 +305,59 @@ export async function reorderProductImage(imageId: string, direction: 'up' | 'do
     await writeAuditLog({ session, action: 'product.image_reordered', targetType: 'Product', targetId: image.product.id, after: { imageId, direction } });
 
     revalidateProductPages(image.product.id, image.product.slug);
-    return { success: true };
   } catch (error) {
     logger.error({ err: error, imageId }, 'Error reordering product image');
-    return { success: false, error: 'Failed to reorder image' };
   }
+}
+
+export async function uploadProductImage(productId: string, formData: FormData): Promise<void> {
+  const session = await requireAdminRole(ROLE_GROUPS.CATALOG_CONTENT);
+
+  const file = formData.get('file') as File;
+  if (!file || file.size === 0) {
+    return;
+  }
+
+  if (!file.type.startsWith('image/')) {
+    return;
+  }
+
+  try {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const uploadsDir = join(process.cwd(), 'public', 'uploads');
+    await mkdir(uploadsDir, { recursive: true });
+
+    const timestamp = Date.now();
+    const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filename = `${timestamp}_${cleanFileName}`;
+    const filePath = join(uploadsDir, filename);
+
+    await writeFile(filePath, buffer);
+
+    const imageUrl = `/uploads/${filename}`;
+    await addProductImage(productId, imageUrl, file.name);
+  } catch (error) {
+    logger.error({ err: error, productId }, 'Error uploading product image');
+  }
+}
+
+export async function updateProductPrice(productId: string, formData: FormData): Promise<void> {
+  const basePrice = Number(formData.get('basePrice'));
+  const salePriceInput = formData.get('salePrice') as string;
+  const salePrice = salePriceInput ? Number(salePriceInput) : null;
+  await updatePrice(productId, basePrice, salePrice);
+}
+
+export async function updateProductInventory(productId: string, formData: FormData): Promise<void> {
+  const quantity = Number(formData.get('quantity'));
+  const lowStockThreshold = Number(formData.get('lowStockThreshold'));
+  await updateInventory(productId, quantity, lowStockThreshold);
+}
+
+export async function addProductImageUrl(productId: string, formData: FormData): Promise<void> {
+  const url = formData.get('url') as string;
+  const altText = (formData.get('altText') as string) || '';
+  await addProductImage(productId, url, altText);
 }

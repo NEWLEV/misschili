@@ -34,10 +34,7 @@ export default async function EditCouponPage({
         Edit Coupon
       </h1>
 
-      <form action={async (formData) => {
-        'use server';
-        await updateCoupon(coupon.id, formData);
-      }} className="card p-(--space-6) space-y-(--space-4)">
+      <form action={updateCoupon.bind(null, coupon.id)} className="card p-(--space-6) space-y-(--space-4)">
         <Input label="Code" name="code" required defaultValue={coupon.code} className="uppercase" />
 
         <div>

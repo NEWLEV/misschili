@@ -87,7 +87,7 @@ export async function updateOrderStatus(
   }
 }
 
-export async function refundOrder(orderId: string) {
+export async function refundOrder(orderId: string): Promise<void> {
   const session = await requireAdminRole(ROLE_GROUPS.REFUND_WRITE);
 
   const order = await prisma.order.findUnique({
@@ -96,16 +96,16 @@ export async function refundOrder(orderId: string) {
   });
 
   if (!order?.payment) {
-    return { success: false, error: 'No payment found for this order' };
+    return;
   }
   if (!order.payment.stripePaymentIntentId) {
-    return { success: false, error: 'This order has no Stripe payment intent on record' };
+    return;
   }
   if (order.payment.status === 'REFUNDED') {
-    return { success: false, error: 'This order has already been refunded' };
+    return;
   }
   if (order.payment.status !== 'SUCCEEDED') {
-    return { success: false, error: `Cannot refund a payment with status ${order.payment.status}` };
+    return;
   }
 
   try {
@@ -136,9 +136,17 @@ export async function refundOrder(orderId: string) {
 
     revalidatePath(`/admin/orders/${orderId}`);
     revalidatePath('/admin/orders');
-    return { success: true };
   } catch (error) {
     logger.error({ err: error, orderId }, 'Error issuing refund');
-    return { success: false, error: 'Stripe refund failed — no money was moved. Check the Stripe Dashboard for details.' };
   }
+}
+
+export async function updateOrderStatusFromForm(orderId: string, formData: FormData): Promise<void> {
+  await updateOrderStatus(
+    orderId,
+    formData.get('status') as OrderStatus,
+    formData.get('adminNotes') as string,
+    formData.get('trackingNumber') as string,
+    formData.get('trackingUrl') as string
+  );
 }

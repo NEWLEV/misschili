@@ -51,12 +51,12 @@ export async function createPopup(formData: FormData) {
   redirect(`/admin/popups/${popup.id}`);
 }
 
-export async function updatePopup(popupId: string, formData: FormData) {
+export async function updatePopup(popupId: string, formData: FormData): Promise<void> {
   const session = await requireAdminRole(ROLE_GROUPS.CONTENT_WRITE);
 
   const parsed = parsePopupForm(formData);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0].message };
+    return;
   }
 
   await prisma.$transaction(async (tx) => {
@@ -76,10 +76,9 @@ export async function updatePopup(popupId: string, formData: FormData) {
 
   revalidatePath(`/admin/popups/${popupId}`);
   revalidatePath('/admin/popups');
-  return { success: true };
 }
 
-export async function togglePopupActive(popupId: string, isActive: boolean) {
+export async function togglePopupActive(popupId: string, isActive: boolean): Promise<void> {
   const session = await requireAdminRole(ROLE_GROUPS.CONTENT_WRITE);
 
   await prisma.$transaction(async (tx) => {
@@ -95,4 +94,8 @@ export async function togglePopupActive(popupId: string, isActive: boolean) {
   await writeAuditLog({ session, action: 'popup.toggled', targetType: 'Popup', targetId: popupId, after: { isActive } });
 
   revalidatePath('/admin/popups');
+}
+
+export async function togglePopupActiveById(popupId: string, currentIsActive: boolean): Promise<void> {
+  return togglePopupActive(popupId, !currentIsActive);
 }

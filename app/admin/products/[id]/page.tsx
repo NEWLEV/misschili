@@ -3,13 +3,14 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  updateInventory,
-  updatePrice,
   updateProduct,
-  addProductImage,
   deleteProductImage,
   setFeaturedImage,
   reorderProductImage,
+  uploadProductImage,
+  updateProductPrice,
+  updateProductInventory,
+  addProductImageUrl,
 } from './actions';
 import { Button } from '@/components/ui/Button';
 import { ConfirmSubmitButton } from '@/components/admin/ConfirmSubmitButton';
@@ -63,10 +64,7 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
         <div className="lg:col-span-2 space-y-(--space-6)">
           <div className="card p-(--space-6)">
             <h2 className="text-(--text-lg) font-semibold mb-(--space-4)">Product Details</h2>
-            <form action={async (formData) => {
-              'use server';
-              await updateProduct(product.id, formData);
-            }} className="space-y-(--space-4)">
+            <form action={updateProduct.bind(null, product.id)} className="space-y-(--space-4)">
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Name</label>
                 <input name="name" defaultValue={product.name} required
@@ -150,19 +148,19 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
                     {img.isFeatured && <span className="badge badge-primary text-[10px] mt-1 inline-block">Featured</span>}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <form action={async () => { 'use server'; await reorderProductImage(img.id, 'up'); }}>
+                    <form action={reorderProductImage.bind(null, img.id, 'up')}>
                       <button type="submit" disabled={i === 0} aria-label="Move image up" className="w-8 h-8 rounded-md hover:bg-(--color-surface-hover) disabled:opacity-30 disabled:cursor-not-allowed">↑</button>
                     </form>
-                    <form action={async () => { 'use server'; await reorderProductImage(img.id, 'down'); }}>
+                    <form action={reorderProductImage.bind(null, img.id, 'down')}>
                       <button type="submit" disabled={i === product.images.length - 1} aria-label="Move image down" className="w-8 h-8 rounded-md hover:bg-(--color-surface-hover) disabled:opacity-30 disabled:cursor-not-allowed">↓</button>
                     </form>
                     {!img.isFeatured && (
-                      <form action={async () => { 'use server'; await setFeaturedImage(img.id); }}>
+                      <form action={setFeaturedImage.bind(null, img.id)}>
                         <button type="submit" className="text-(--text-xs) px-2 h-8 rounded-md hover:bg-(--color-surface-hover)">Set featured</button>
                       </form>
                     )}
                     <ConfirmSubmitButton
-                      action={async () => await deleteProductImage(img.id)}
+                      action={deleteProductImage.bind(null, img.id)}
                       confirmMessage="Remove this image from the product?"
                       variant="ghost"
                       className="h-8! px-2! text-(--color-danger)"
@@ -178,14 +176,28 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
             </div>
 
             <form
-              action={async (formData) => {
-                'use server';
-                await addProductImage(product.id, formData.get('url') as string, (formData.get('altText') as string) || '');
-              }}
+              action={uploadProductImage.bind(null, product.id)}
+              className="flex gap-(--space-2) items-end border-t border-(--color-border) pt-(--space-4) mb-(--space-4)"
+            >
+              <div className="flex-1">
+                <label className="block text-(--text-xs) font-medium mb-1">Upload Local Image</label>
+                <input
+                  name="file"
+                  type="file"
+                  accept="image/*"
+                  required
+                  className="w-full h-9 px-2 py-1 rounded-md bg-(--color-bg) border border-(--color-border) text-(--text-sm) file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-(--color-surface-hover) file:text-(--color-text)"
+                />
+              </div>
+              <Button type="submit" variant="outline" size="sm">Upload</Button>
+            </form>
+
+            <form
+              action={addProductImageUrl.bind(null, product.id)}
               className="flex gap-(--space-2) items-end border-t border-(--color-border) pt-(--space-4)"
             >
               <div className="flex-1">
-                <label className="block text-(--text-xs) font-medium mb-1">Image URL</label>
+                <label className="block text-(--text-xs) font-medium mb-1">Or Paste Image URL</label>
                 <input name="url" type="url" required placeholder="https://res.cloudinary.com/…"
                   className="w-full h-9 px-3 rounded-md bg-(--color-bg) border border-(--color-border) text-(--text-sm)" />
               </div>
@@ -194,7 +206,7 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
                 <input name="altText" placeholder={product.name}
                   className="w-full h-9 px-3 rounded-md bg-(--color-bg) border border-(--color-border) text-(--text-sm)" />
               </div>
-              <Button type="submit" variant="outline" size="sm">Add</Button>
+              <Button type="submit" variant="outline" size="sm">Add URL</Button>
             </form>
           </div>
         </div>
@@ -204,15 +216,7 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
           {/* Pricing Form */}
           <div className="card p-(--space-5)">
             <h2 className="text-(--text-base) font-semibold mb-(--space-3)">Pricing</h2>
-            <form action={async (formData) => {
-              'use server';
-              const salePriceInput = formData.get('salePrice') as string;
-              await updatePrice(
-                product.id,
-                Number(formData.get('basePrice')),
-                salePriceInput ? Number(salePriceInput) : null
-              );
-            }} className="space-y-(--space-4)">
+            <form action={updateProductPrice.bind(null, product.id)} className="space-y-(--space-4)">
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Base Price ($)</label>
                 <input
@@ -243,14 +247,7 @@ export default async function AdminProductDetailPage({ params }: { params: Promi
           {/* Inventory Form */}
           <div className="card p-(--space-5)">
             <h2 className="text-(--text-base) font-semibold mb-(--space-3)">Inventory Management</h2>
-            <form action={async (formData) => {
-              'use server';
-              await updateInventory(
-                product.id,
-                Number(formData.get('quantity')),
-                Number(formData.get('lowStockThreshold'))
-              );
-            }} className="space-y-(--space-4)">
+            <form action={updateProductInventory.bind(null, product.id)} className="space-y-(--space-4)">
               <div>
                 <label className="block text-(--text-sm) font-medium mb-1">Available Quantity</label>
                 <input 

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
-import { setProductStatus } from './[id]/actions';
+import { toggleProductStatus } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,10 +76,7 @@ export default async function AdminProductsPage() {
                     </td>
                     <td className="p-(--space-4) text-right">
                       <div className="flex items-center justify-end gap-(--space-2)">
-                        <form action={async () => {
-                          'use server';
-                          await setProductStatus(product.id, product.status === 'ARCHIVED' ? 'ACTIVE' : 'ARCHIVED');
-                        }}>
+                        <form action={toggleProductStatus.bind(null, product.id, product.status)}>
                           <Button type="submit" variant="ghost" size="sm">
                             {product.status === 'ARCHIVED' ? 'Activate' : 'Disable'}
                           </Button>

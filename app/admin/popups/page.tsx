@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { togglePopupActive } from './actions';
+import { togglePopupActiveById } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,10 +44,7 @@ export default async function AdminPopupsPage() {
                   </td>
                   <td className="p-(--space-4) text-right">
                     <div className="flex items-center justify-end gap-(--space-2)">
-                      <form action={async () => {
-                        'use server';
-                        await togglePopupActive(popup.id, !popup.isActive);
-                      }}>
+                      <form action={togglePopupActiveById.bind(null, popup.id, popup.isActive)}>
                         <Button type="submit" variant="ghost" size="sm">
                           {popup.isActive ? 'Deactivate' : 'Activate'}
                         </Button>

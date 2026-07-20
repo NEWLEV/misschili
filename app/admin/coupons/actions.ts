@@ -43,12 +43,12 @@ export async function createCoupon(formData: FormData) {
   redirect(`/admin/coupons/${coupon.id}`);
 }
 
-export async function updateCoupon(couponId: string, formData: FormData) {
+export async function updateCoupon(couponId: string, formData: FormData): Promise<void> {
   const session = await requireAdminRole(ROLE_GROUPS.MARKETING_WRITE);
 
   const parsed = parseCouponForm(formData);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0].message };
+    return;
   }
 
   const before = await prisma.coupon.findUnique({ where: { id: couponId }, select: { code: true, type: true, value: true, isActive: true } });
@@ -66,5 +66,4 @@ export async function updateCoupon(couponId: string, formData: FormData) {
 
   revalidatePath(`/admin/coupons/${couponId}`);
   revalidatePath('/admin/coupons');
-  return { success: true };
 }
