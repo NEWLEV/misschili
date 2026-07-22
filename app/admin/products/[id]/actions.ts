@@ -326,7 +326,7 @@ export async function uploadProductImage(productId: string, formData: FormData):
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadsDir = join(process.cwd(), 'public', 'uploads');
+    const uploadsDir = process.env.UPLOADS_DIR || join(process.cwd(), 'public', 'uploads');
     await mkdir(uploadsDir, { recursive: true });
 
     const timestamp = Date.now();
@@ -336,7 +336,9 @@ export async function uploadProductImage(productId: string, formData: FormData):
 
     await writeFile(filePath, buffer);
 
-    const imageUrl = `/uploads/${filename}`;
+    // Served via app/media/[filename]/route.ts rather than as a static
+    // /uploads/* asset — see that file for why.
+    const imageUrl = `/media/${filename}`;
     await addProductImage(productId, imageUrl, file.name);
   } catch (error) {
     logger.error({ err: error, productId }, 'Error uploading product image');
