@@ -1,8 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { prisma } from '@/lib/prisma';
 
-export function Footer() {
+export async function Footer() {
   const currentYear = new Date().getFullYear();
+  const settings = await prisma.siteSetting.findMany({ where: { key: { in: ['store_name', 'instagram', 'contact_email'] } } });
+  const getSetting = (key: string, fallback: string) => settings.find((s) => s.key === key)?.value ?? fallback;
+  const storeName = getSetting('store_name', 'Miss Chili Hot Sauce');
+  const instagramUrl = getSetting('instagram', 'https://www.instagram.com/misschilimiami');
+  const contactEmail = getSetting('contact_email', 'misschilihotsauce@gmail.com');
 
   return (
     <footer
@@ -34,7 +40,7 @@ export function Footer() {
             </p>
             <div className="flex gap-(--space-3)">
               <a
-                href="https://www.instagram.com/misschilimiami"
+                href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 flex items-center justify-center rounded-md bg-(--color-surface) hover:bg-(--color-surface-hover) text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
@@ -47,7 +53,7 @@ export function Footer() {
                 </svg>
               </a>
               <a
-                href="mailto:misschilihotsauce@gmail.com"
+                href={`mailto:${contactEmail}`}
                 className="w-10 h-10 flex items-center justify-center rounded-md bg-(--color-surface) hover:bg-(--color-surface-hover) text-(--color-text-secondary) hover:text-(--color-text) transition-colors"
                 aria-label="Email"
               >
@@ -143,7 +149,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-(--space-12) pt-(--space-6) border-t border-(--color-border) flex flex-col sm:flex-row justify-between items-center gap-(--space-4)">
           <p className="text-(--text-xs) text-(--color-text-muted)">
-            © {currentYear} Miss Chili Hot Sauce, LLC. Miami, FL. All rights reserved.
+            © {currentYear} {storeName}, LLC. Miami, FL. All rights reserved.
           </p>
           <p className="text-(--text-xs) text-(--color-text-muted)">
             Made in the U.S.A. 🌶️

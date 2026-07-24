@@ -1,9 +1,89 @@
 import { prisma } from '@/lib/prisma';
 import { formatDateTime } from '@/lib/utils';
+import { requireAdminRole, ROLE_GROUPS } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
+// "product.image_added" -> "Product · Image added" — the raw string stays
+// visible underneath for anyone who wants the exact, greppable value.
+function humanizeAction(action: string): string {
+  return action
+    .split('.')
+    .map((segment) =>
+      segment
+        .split('_')
+        .join(' ')
+        .replace(/^./, (c) => c.toUpperCase())
+    )
+    .join(' · ');
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function formatValue(value: unknown): string {
+  if (value === null || value === undefined) return '—';
+  if (typeof value === 'string') return value;
+  return JSON.stringify(value);
+}
+
+// Renders a per-field before/after comparison when both sides are plain
+// objects (the common case for every writeAuditLog call in this codebase),
+// falling back to raw JSON for anything else rather than guessing.
+function DiffView({ before, after }: { before: unknown; after: unknown }) {
+  if (isPlainObject(before) && isPlainObject(after)) {
+    const keys = Array.from(new Set([...Object.keys(before), ...Object.keys(after)]));
+    const changed = keys.filter((key) => JSON.stringify(before[key]) !== JSON.stringify(after[key]));
+    if (changed.length === 0) return <span className="text-(--color-text-muted)">No field changes</span>;
+    return (
+      <div className="space-y-1">
+        {changed.map((key) => (
+          <div key={key}>
+            <span className="text-(--color-text-muted)">{key}:</span>{' '}
+            <span className="text-(--color-text-muted) line-through">{formatValue(before[key])}</span>{' '}
+            <span>→ {formatValue(after[key])}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (isPlainObject(after) && before == null) {
+    return (
+      <div className="space-y-1">
+        {Object.entries(after).map(([key, value]) => (
+          <div key={key}>
+            <span className="text-(--color-text-muted)">{key}:</span> {formatValue(value)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (isPlainObject(before) && after == null) {
+    return (
+      <div className="space-y-1 text-(--color-text-muted) line-through">
+        {Object.entries(before).map(([key, value]) => (
+          <div key={key}>{key}: {formatValue(value)}</div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {before != null && <div className="text-(--color-text-muted) break-all">− {formatValue(before)}</div>}
+      {after != null && <div className="break-all">+ {formatValue(after)}</div>}
+    </>
+  );
+}
+
 export default async function AuditLogPage() {
+  // Unlike most admin pages, this one needs stricter gating than "any admin
+  // role" — the trail covers prices, refunds, and customer-order changes.
+  await requireAdminRole(ROLE_GROUPS.AUDIT_READ);
+
   const entries = await prisma.auditLog.findMany({
     orderBy: { createdAt: 'desc' },
     take: 200,
@@ -38,14 +118,16 @@ export default async function AuditLogPage() {
                     <div>{entry.actorEmail || 'Unknown'}</div>
                     <div className="text-(--text-xs) text-(--color-text-muted)">{entry.actorRole}</div>
                   </td>
-                  <td className="p-(--space-4) text-(--text-sm) font-mono">{entry.action}</td>
+                  <td className="p-(--space-4) text-(--text-sm)">
+                    <div>{humanizeAction(entry.action)}</div>
+                    <div className="text-[10px] text-(--color-text-muted) font-mono">{entry.action}</div>
+                  </td>
                   <td className="p-(--space-4) text-(--text-sm)">
                     <div>{entry.targetType}</div>
                     <div className="text-(--text-xs) text-(--color-text-muted) font-mono break-all">{entry.targetId}</div>
                   </td>
                   <td className="p-(--space-4) text-(--text-xs) font-mono max-w-md">
-                    {entry.before ? <div className="text-(--color-text-muted) break-all">− {JSON.stringify(entry.before)}</div> : null}
-                    {entry.after ? <div className="break-all">+ {JSON.stringify(entry.after)}</div> : null}
+                    <DiffView before={entry.before} after={entry.after} />
                   </td>
                 </tr>
               ))}

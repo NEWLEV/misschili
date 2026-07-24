@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { NextResponse } from 'next/server';
+import { UPLOADS_DIR } from '@/lib/uploads';
 
 // Uploaded product images are written to disk at runtime (see
 // uploadProductImage in app/admin/products/[id]/actions.ts). They can't be
@@ -9,7 +10,6 @@ import { NextResponse } from 'next/server';
 // anything written to `public/` after the process starts 404s until the
 // server restarts. Reading the file fresh on every request here sidesteps
 // that entirely.
-const UPLOADS_DIR = process.env.UPLOADS_DIR || join(process.cwd(), 'public', 'uploads');
 
 const CONTENT_TYPES: Record<string, string> = {
   '.jpg': 'image/jpeg',

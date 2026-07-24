@@ -8,6 +8,7 @@ import { writeAuditLog } from '@/lib/audit-log';
 import { logger } from '@/lib/logger';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
+import { UPLOADS_DIR } from '@/lib/uploads';
 
 function revalidateProductPages(productId: string, slug: string) {
   revalidatePath(`/admin/products/${productId}`);
@@ -311,7 +312,10 @@ export async function reorderProductImage(imageId: string, direction: 'up' | 'do
 }
 
 export async function uploadProductImage(productId: string, formData: FormData): Promise<void> {
-  const session = await requireAdminRole(ROLE_GROUPS.CATALOG_CONTENT);
+  // addProductImage() below performs its own requireAdminRole + audit log
+  // write; this call exists only to reject unauthorized requests before
+  // touching the filesystem.
+  await requireAdminRole(ROLE_GROUPS.CATALOG_CONTENT);
 
   const file = formData.get('file') as File;
   if (!file || file.size === 0) {
@@ -326,13 +330,12 @@ export async function uploadProductImage(productId: string, formData: FormData):
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadsDir = process.env.UPLOADS_DIR || join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadsDir, { recursive: true });
+    await mkdir(UPLOADS_DIR, { recursive: true });
 
     const timestamp = Date.now();
     const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
     const filename = `${timestamp}_${cleanFileName}`;
-    const filePath = join(uploadsDir, filename);
+    const filePath = join(UPLOADS_DIR, filename);
 
     await writeFile(filePath, buffer);
 

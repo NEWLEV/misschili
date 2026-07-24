@@ -64,8 +64,10 @@ async function main() {
       metaDesc: 'Ghost pepper hot sauce handcrafted in Miami. Bold heat with sweetness, spices, and fiery intensity. 5 fl oz.',
       images: {
         create: [
-          { url: '/images/logos/MissChili_Logos_FieryHeat.png', altText: 'Fiery Heat Ghost Pepper Hot Sauce', sortOrder: 0, isFeatured: true },
+          { url: '/images/products/fiery-heat-bottle.jpg', altText: 'Miss Chili Fiery Heat hot sauce bottle', sortOrder: 0, isFeatured: true },
           { url: '/images/labels/MissChili_Label_FIERYHEAT.jpg', altText: 'Fiery Heat label with nutrition facts', sortOrder: 1 },
+          { url: '/images/products/bottles-duo.jpg', altText: 'Miss Chili Fiery Heat and Spicy Hot bottles side by side', sortOrder: 2 },
+          { url: '/images/products/bottles-four-pack.jpg', altText: 'Four bottles of Miss Chili hot sauce', sortOrder: 3 },
         ],
       },
       categories: { create: { categoryId: catFiery.id } },
@@ -91,8 +93,10 @@ async function main() {
       metaDesc: 'Jalapeño habanero hot sauce with fresh spices. The everyday hot sauce for people who want real flavor.',
       images: {
         create: [
-          { url: '/images/logos/MissChili_Logos_SpicyHot.png', altText: 'Spicy Hot Jalapeño Habanero Hot Sauce', sortOrder: 0, isFeatured: true },
+          { url: '/images/products/spicy-hot-bottle.jpg', altText: 'Miss Chili Spicy Hot hot sauce bottle', sortOrder: 0, isFeatured: true },
           { url: '/images/labels/MissChili_LabelSPICYHOT.jpg', altText: 'Spicy Hot label with nutrition facts', sortOrder: 1 },
+          { url: '/images/products/bottles-duo.jpg', altText: 'Miss Chili Fiery Heat and Spicy Hot bottles side by side', sortOrder: 2 },
+          { url: '/images/products/bottles-four-pack.jpg', altText: 'Four bottles of Miss Chili hot sauce', sortOrder: 3 },
         ],
       },
       categories: { create: { categoryId: catSpicy.id } },
@@ -107,6 +111,7 @@ async function main() {
     { key: 'contact_email', value: 'misschilihotsauce@gmail.com', type: SettingType.STRING },
     { key: 'instagram', value: 'https://www.instagram.com/misschilimiami', type: SettingType.STRING },
     { key: 'free_shipping_threshold', value: '50', type: SettingType.STRING },
+    { key: 'flat_shipping_rate', value: '7.99', type: SettingType.STRING },
     { key: 'tax_rate', value: '0.07', type: SettingType.STRING },
     { key: 'currency', value: 'USD', type: SettingType.STRING },
     { key: 'hero_headline', value: 'Ghost Pepper Heat. Miami Soul.', type: SettingType.STRING },

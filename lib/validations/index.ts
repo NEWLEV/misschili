@@ -203,3 +203,22 @@ export const siteSettingSchema = z.object({
 });
 
 export type SiteSettingFormData = z.infer<typeof siteSettingSchema>;
+
+// The admin Settings page's actual field set — an explicit allowlist rather
+// than accepting arbitrary form field names as SiteSetting keys, so a
+// malformed or malicious request can't write unexpected rows to that table.
+export const storeSettingsSchema = z.object({
+  store_name: z.string().min(1, 'Store name is required').max(100),
+  contact_email: z.string().email('Enter a valid email address'),
+  instagram: z.string().url('Enter a valid URL, e.g. https://instagram.com/yourhandle').or(z.literal('')),
+  hero_headline: z.string().min(1, 'Headline is required').max(120),
+  hero_subtext: z.string().max(300).or(z.literal('')),
+  hero_cta_text: z.string().max(40).or(z.literal('')),
+  hero_cta_url: z.string().min(1, 'Button link is required'),
+  free_shipping_threshold: z.coerce.number().min(0, 'Must be 0 or more'),
+  flat_shipping_rate: z.coerce.number().min(0, 'Must be 0 or more'),
+  tax_rate: z.coerce.number().min(0).max(1, 'Enter as a decimal, e.g. 0.07 for 7%'),
+  currency: z.string().length(3, 'Use a 3-letter currency code, e.g. USD').toUpperCase(),
+});
+
+export type StoreSettingsFormData = z.infer<typeof storeSettingsSchema>;

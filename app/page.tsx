@@ -60,6 +60,9 @@ export default async function HomePage() {
   );
   const heroCtaText = getSetting('hero_cta_text', 'Shop Our Sauces');
   const heroCtaUrl = getSetting('hero_cta_url', '/products');
+  const storeName = getSetting('store_name', 'Miss Chili Hot Sauce');
+  const contactEmail = getSetting('contact_email', 'misschilihotsauce@gmail.com');
+  const instagramUrl = getSetting('instagram', 'https://www.instagram.com/misschilimiami');
 
   return (
     <>
@@ -342,7 +345,7 @@ export default async function HomePage() {
           __html: safeJsonLd({
             '@context': 'https://schema.org',
             '@type': 'WebSite',
-            name: 'Miss Chili Hot Sauce',
+            name: storeName,
             url: 'https://www.misschilipeppers.com',
           }),
         }}
@@ -353,10 +356,10 @@ export default async function HomePage() {
           __html: safeJsonLd({
             '@context': 'https://schema.org',
             '@type': 'Organization',
-            name: 'Miss Chili Hot Sauce, LLC',
+            name: `${storeName}, LLC`,
             url: 'https://www.misschilipeppers.com',
             logo: 'https://www.misschilipeppers.com/images/logos/MissChili_Logos_MissChili.png',
-            sameAs: ['https://www.instagram.com/misschilimiami'],
+            sameAs: [instagramUrl],
             address: {
               '@type': 'PostalAddress',
               streetAddress: '12485 SW 137 Ave. Ste 212',
@@ -367,7 +370,7 @@ export default async function HomePage() {
             },
             contactPoint: {
               '@type': 'ContactPoint',
-              email: 'misschilihotsauce@gmail.com',
+              email: contactEmail,
               contactType: 'customer service',
             },
           }),

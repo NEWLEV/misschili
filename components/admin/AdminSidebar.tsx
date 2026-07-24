@@ -15,6 +15,7 @@ const SIDEBAR_ITEMS = [
   { href: '/admin/popups', label: 'Popups', icon: '💬' },
   { href: '/admin/content', label: 'Content', icon: '📝' },
   { href: '/admin/subscribers', label: 'Subscribers', icon: '📧' },
+  { href: '/admin/media', label: 'Media Library', icon: '🖼️' },
   { href: '/admin/audit-log', label: 'Audit Log', icon: '🧾' },
   { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
 ];
