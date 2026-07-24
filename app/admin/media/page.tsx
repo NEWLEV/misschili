@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { UPLOADS_DIR } from '@/lib/uploads';
 import { ConfirmSubmitButton } from '@/components/admin/ConfirmSubmitButton';
 import { deleteUpload } from './actions';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,39 +19,55 @@ interface MediaFile {
 }
 
 async function getMediaFiles(): Promise<MediaFile[]> {
-  let filenames: string[];
   try {
-    filenames = await readdir(UPLOADS_DIR);
-  } catch {
+    let filenames: string[];
+    try {
+      filenames = await readdir(UPLOADS_DIR);
+    } catch {
+      return [];
+    }
+
+    const images = await prisma.productImage.findMany({
+      where: { url: { startsWith: '/media/' } },
+      include: { product: { select: { id: true, name: true } } },
+    });
+    const usageByFilename = new Map<string, MediaFile['usedBy']>();
+    for (const img of images) {
+      const filename = img.url.replace('/media/', '');
+      const list = usageByFilename.get(filename) ?? [];
+      list.push({ productId: img.product.id, productName: img.product.name });
+      usageByFilename.set(filename, list);
+    }
+
+    const files = await Promise.all(
+      filenames.map(async (filename) => {
+        try {
+          const stats = await stat(join(UPLOADS_DIR, filename));
+          return {
+            filename,
+            url: `/media/${filename}`,
+            size: stats.size,
+            modifiedAt: stats.mtime,
+            usedBy: usageByFilename.get(filename) ?? [],
+          };
+        } catch {
+          // File listed by readdir() but gone (or unreadable) by the time we
+          // stat it — skip it rather than letting the whole page 500.
+          return null;
+        }
+      })
+    );
+
+    return files
+      .filter((f): f is MediaFile => f !== null)
+      .sort((a, b) => b.modifiedAt.getTime() - a.modifiedAt.getTime());
+  } catch (error) {
+    // Defensive fallback so a bad row or a transient DB issue never takes
+    // down the whole admin page — matches how the rest of the admin area
+    // degrades (log + empty state) rather than crashing.
+    logger.error({ err: error }, 'Error loading media library');
     return [];
   }
-
-  const images = await prisma.productImage.findMany({
-    where: { url: { startsWith: '/media/' } },
-    include: { product: { select: { id: true, name: true } } },
-  });
-  const usageByFilename = new Map<string, MediaFile['usedBy']>();
-  for (const img of images) {
-    const filename = img.url.replace('/media/', '');
-    const list = usageByFilename.get(filename) ?? [];
-    list.push({ productId: img.product.id, productName: img.product.name });
-    usageByFilename.set(filename, list);
-  }
-
-  const files = await Promise.all(
-    filenames.map(async (filename) => {
-      const stats = await stat(join(UPLOADS_DIR, filename));
-      return {
-        filename,
-        url: `/media/${filename}`,
-        size: stats.size,
-        modifiedAt: stats.mtime,
-        usedBy: usageByFilename.get(filename) ?? [],
-      };
-    })
-  );
-
-  return files.sort((a, b) => b.modifiedAt.getTime() - a.modifiedAt.getTime());
 }
 
 function formatBytes(bytes: number): string {
