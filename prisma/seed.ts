@@ -64,10 +64,10 @@ async function main() {
       metaDesc: 'Ghost pepper hot sauce handcrafted in Miami. Bold heat with sweetness, spices, and fiery intensity. 5 fl oz.',
       images: {
         create: [
-          { url: '/images/products/fiery-heat-bottle.jpg', altText: 'Miss Chili Fiery Heat hot sauce bottle', sortOrder: 0, isFeatured: true },
+          { url: '/images/products/fiery-heat-bottle.png', altText: 'Miss Chili Fiery Heat hot sauce bottle', sortOrder: 0, isFeatured: true },
           { url: '/images/labels/MissChili_Label_FIERYHEAT.jpg', altText: 'Fiery Heat label with nutrition facts', sortOrder: 1 },
-          { url: '/images/products/bottles-duo.jpg', altText: 'Miss Chili Fiery Heat and Spicy Hot bottles side by side', sortOrder: 2 },
-          { url: '/images/products/bottles-four-pack.jpg', altText: 'Four bottles of Miss Chili hot sauce', sortOrder: 3 },
+          { url: '/images/products/bottles-duo.png', altText: 'Miss Chili Fiery Heat and Spicy Hot bottles side by side', sortOrder: 2 },
+          { url: '/images/products/bottles-four-pack.png', altText: 'Four bottles of Miss Chili hot sauce', sortOrder: 3 },
         ],
       },
       categories: { create: { categoryId: catFiery.id } },
@@ -93,10 +93,10 @@ async function main() {
       metaDesc: 'Jalapeño habanero hot sauce with fresh spices. The everyday hot sauce for people who want real flavor.',
       images: {
         create: [
-          { url: '/images/products/spicy-hot-bottle.jpg', altText: 'Miss Chili Spicy Hot hot sauce bottle', sortOrder: 0, isFeatured: true },
+          { url: '/images/products/spicy-hot-bottle.png', altText: 'Miss Chili Spicy Hot hot sauce bottle', sortOrder: 0, isFeatured: true },
           { url: '/images/labels/MissChili_LabelSPICYHOT.jpg', altText: 'Spicy Hot label with nutrition facts', sortOrder: 1 },
-          { url: '/images/products/bottles-duo.jpg', altText: 'Miss Chili Fiery Heat and Spicy Hot bottles side by side', sortOrder: 2 },
-          { url: '/images/products/bottles-four-pack.jpg', altText: 'Four bottles of Miss Chili hot sauce', sortOrder: 3 },
+          { url: '/images/products/bottles-duo.png', altText: 'Miss Chili Fiery Heat and Spicy Hot bottles side by side', sortOrder: 2 },
+          { url: '/images/products/bottles-four-pack.png', altText: 'Four bottles of Miss Chili hot sauce', sortOrder: 3 },
         ],
       },
       categories: { create: { categoryId: catSpicy.id } },
